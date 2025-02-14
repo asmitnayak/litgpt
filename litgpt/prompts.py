@@ -361,6 +361,13 @@ class Qwen2_5_DP(ChatML):
             system_message = f.read()
         super().__init__(system_message)
 
+class Qwen2_5_DP_Reason_First(ChatML):
+    def __init__(self):
+        system_message = "You are Qwen, created by Alibaba Cloud. You are a helpful assistant. You should think step-by-step."
+        with open("litgpt/system_prompts/deceptive_pattern_prompt_reason_first.txt", "r") as f:
+            system_message = f.read()
+        super().__init__(system_message)
+
 class Qwen2_5_Math(ChatML):
     def __init__(self):
         super().__init__("Please reason step by step, and put your final answer within \\boxed{}.")
@@ -404,6 +411,7 @@ prompt_styles: Dict[str, Type[PromptStyle]] = {
     "olmo": OLMo,
     "qwen2.5": Qwen2_5,
     "qwen2.5-dp": Qwen2_5_DP,
+    "qwen2.5-dp-reason-first": Qwen2_5_DP_Reason_First,
     "qwen2.5-math": Qwen2_5_Math,
     "qwq": QwQ,
     "smollm2": SmolLM2,

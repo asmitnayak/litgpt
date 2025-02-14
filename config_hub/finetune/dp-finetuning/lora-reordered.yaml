@@ -46,11 +46,11 @@ lora_head: true
 
 # Data-related arguments. If not provided, the default is ``litgpt.data.Alpaca``.
 data:
-  class_path: litgpt.data.DeceptivePatterns
+  class_path: litgpt.data.DeceptivePatternsReasonFirst
   init_args:
     mask_prompt: false
     val_split_fraction: 0.03847
-    prompt_style: qwen2.5-dp
+    prompt_style: qwen2.5-dp-reason-first
     ignore_index: -100
     seed: 42
     num_workers: 4

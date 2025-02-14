@@ -16,6 +16,7 @@ from litgpt.data.tinystories import TinyStories
 from litgpt.data.openwebtext import OpenWebText
 from litgpt.data.microllama import MicroLlama
 from litgpt.data.deceptive_patterns import DeceptivePatterns
+from litgpt.data.deceptive_patterns_reason_first import DeceptivePatternsReasonFirst
 
 
 __all__ = [
@@ -27,6 +28,7 @@ __all__ = [
     "JSON",
     "LIMA",
     "DeceptivePatterns",
+    "DeceptivePatternsReasonFirst",
     "LitData",
     "DataModule",
     "LongForm",
