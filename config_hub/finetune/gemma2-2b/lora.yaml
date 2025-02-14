@@ -46,7 +46,7 @@ lora_head: true
 
 # Data-related arguments. If not provided, the default is ``litgpt.data.Alpaca``.
 data:
-  class_path: litgpt.data.Alpaca2k
+  class_path: litgpt.data.DeceptivePatterns
   init_args:
     mask_prompt: false
     val_split_fraction: 0.03847
