@@ -83,7 +83,7 @@ train:
   max_steps:
 
   # Limits the length of samples. Off by default (type: Optional[int], default: null)
-  max_seq_length: 4096
+  max_seq_length: 7168
 
   # Whether to tie the embedding weights with the language modeling head weights. (type: Optional[bool], default: null)
   tie_embeddings:
@@ -101,7 +101,7 @@ eval:
   interval: 25
 
   # Number of tokens to generate (type: Optional[int], default: 100)
-  max_new_tokens: 100
+  max_new_tokens: 2048
 
   # Number of iterations (type: int, default: 100)
   max_iters: 100
