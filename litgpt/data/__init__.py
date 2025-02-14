@@ -15,6 +15,7 @@ from litgpt.data.tinyllama import TinyLlama
 from litgpt.data.tinystories import TinyStories
 from litgpt.data.openwebtext import OpenWebText
 from litgpt.data.microllama import MicroLlama
+from litgpt.data.deceptive_patterns import DeceptivePatterns
 
 
 __all__ = [
@@ -25,6 +26,7 @@ __all__ = [
     "FLAN",
     "JSON",
     "LIMA",
+    "DeceptivePatterns",
     "LitData",
     "DataModule",
     "LongForm",
