@@ -3,7 +3,7 @@
 checkpoint_dir: checkpoints/HuggingFaceTB/SmolLM2-1.7B-Instruct
 
 # Directory in which to save checkpoints and logs. (type: <class 'Path'>, default: out/lora)
-out_dir: out/finetune/lora-smoll2-1_7b
+out_dir: out/finetune/lora-smollm2-1_7b
 
 # The precision to use for finetuning. Possible choices: "bf16-true", "bf16-mixed", "32-true". (type: Optional[str], default: null)
 precision: bf16-true
