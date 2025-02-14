@@ -69,7 +69,7 @@ class DeceptivePatterns(DataModule):
         from datasets import load_dataset
 
         dataset = load_dataset(self.repo_id, token=self.access_token)
-        data = format_dataset(dataset["train"], self.include_multiturn_conversations)
+        data = format_dataset(dataset["train"])
 
         # Partition the dataset into train and test
         train_data, test_data = random_split(
