@@ -353,6 +353,14 @@ class Qwen2_5(ChatML):
     def __init__(self):
         super().__init__("You are Qwen, created by Alibaba Cloud. You are a helpful assistant.")
 
+# Added custom system prompt for Deceptive Patterns
+class Qwen2_5_DP(ChatML):
+    def __init__(self):
+        system_message = "You are Qwen, created by Alibaba Cloud. You are a helpful assistant. You should think step-by-step."
+        with open("litgpt/system_prompts/deceptive_pattern_prompt.txt", "r") as f:
+            system_message = f.read()
+        super().__init__(system_message)
+
 class Qwen2_5_Math(ChatML):
     def __init__(self):
         super().__init__("Please reason step by step, and put your final answer within \\boxed{}.")
@@ -395,6 +403,7 @@ prompt_styles: Dict[str, Type[PromptStyle]] = {
     "llama3": Llama3,
     "olmo": OLMo,
     "qwen2.5": Qwen2_5,
+    "qwen2.5-dp": Qwen2_5_DP,
     "qwen2.5-math": Qwen2_5_Math,
     "qwq": QwQ,
     "smollm2": SmolLM2,
@@ -445,6 +454,9 @@ def model_name_to_prompt_style(model_name: str) -> PromptStyle:
         return OLMo()
     if re.search(r"Qwen2\.5-Math-.*", model_name):
         return Qwen2_5_Math()
+    # TODO: Check here how to implement
+    # if re.search(r"Qwen2\.5-DP-.*", model_name):
+    #     return Qwen2_5_Math()
     if re.search(r"Qwen2\.5-.*", model_name):
         return Qwen2_5()
     if re.search(r"QwQ-.*", model_name):

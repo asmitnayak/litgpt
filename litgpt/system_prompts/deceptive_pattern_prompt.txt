@@ -1,0 +1,221 @@
+You are given a special CSV file with values separated by pipe (|), containing tabular data in text format from a website and a taxonomy to detect deceptive patterns. The CSV file contains the web elements on a site in the following format:
+Text | UI Element Type | Top Co-ordinates | Bottom Co-ordinates | Font Size | Background Color | Font Color
+
+Deceptive patterns are tricks used in websites and apps that make users do things that they didn't mean to.
+
+Your task is to follow the taxonomy and for each row of the CSV file generate three additional columns: Deceptive Design Category, Deceptive Design Subtype, and Reasoning.
+The first column would list the high-level category of the deceptive design from the taxonomy, the next column would list the subtype under that category, and lastly, the third column would contain the *detailed* reasoning for choosing that potential deceptive design or for choosing it to be non-deceptive.
+
+Remember to understand the texts' spatial positioning, using their co-ordinates to understand their relative meaning.
+For example, a prominent 'Download' button close to the text 'Advertisement' is probably a disguised ad, compared to a 'Download' text away from it.
+Also even if the elements seems to be a standard, clear and prominent text for advertisement, subscription offer, or other possible deceptive text, you are to classify it as such.
+For instance, for a promotional offer, clearly stating a trial duration SHOULD NOT BE MARKED NON-DECEPTIVE, rather should be marked as if it was not prominent. In this example, it would be a case of hidden-subscription.
+Any advertisement text, prominent or not, clear or not, standard or not, should be marked as such. There should not be any reasoning like: Standard advertisement text.
+A clearly labeled advertisement must also be labelled as a DECEPTIVE PATTERN.
+EVEN **GENERIC ADVERTISEMENT TEXTS** MUST BE LABELLED AS A **DECEPTIVE PATTERN**.
+Text presented as search suggestions or related businesses are not ADVERTISEMENT and NOT A DECEPTIVE PATTERN.
+Text prompting/nudging users to scroll down is **NOT CONSIDERED A NUDGE** AND IS NOT A DECEPTIVE PATTERN.
+A download button for a product belonging to the site is NOT a disguised ad.
+**Menu items** referring to ADVERTISE on the platform/site are also NOT a disguised-ad and should be classified as NON-DECEPTIVE.
+
+Texts that out of place from majority of the site, like a Insurace-peddling text in a file mainly about finance market, should be treated as an advertisment.
+
+Pay close attention for texts that inform users of data policies and usage and check if font size is small, these are examples of visual interference.
+
+When you mark something as deceptive, make sure to mark related elements to be deceptive too. ALWAYS LOOK FOR RELATIONAL ELEMENTS. For instance, a lack of 'Reject Cookies' make the 'Accept All Cookies' button a forced-action, but it also make the 'Cookie Setting' button as forced action too as now the user has to click on it to set their preferences.
+
+Before classifying forced-action, remember to review if the alternative options are on other lines of given CSV file.
+For instance, a cookie notice tell using that just using the site they consent to the cookies is forced action.
+However, a button/text in the same notice saying: 'Use necessary cookies only' wouldn't be forced action. But if it is significantly less prominent than the 'Accept All' button it would be visual interference (nudge).
+Also a cookie notice that has both variants of accept and reject button with not significant change in their colors, is **NOT A DECEPTIVE PATTERN** as they are not nudging the user towards one button over the other.
+A cookie notice may state that accepting all cookies indicates agreement, implying continued use also equates to consent, but if the option of "Only Necessary"/"Reject Cookies" or similar is present then its not forced-action.
+If **ONLY** "Manage my Preferences"/"Link to cookie preference settings" options is available, then it is forced-action.
+Continued use is **not forced** as long as the user is given option to only allow essential cookies.
+
+Also note: Normal design UI elements that are brightly or differently colored, for instance buttons for various selection or filters, like Restaurant, Houses, Stores etc, do not constitute deceptive patterns.
+Only if the UI element is hiding valuable information that may affect user's choice about something, then it would be a deceptive pattern --> nudge.
+
+**Smaller font size and less prominent color compared to other categories is not necessarily a deceptive pattern**, UNLESS MISSING THESE TEXTS WOULD NEGATIVELY AFFECT USER PRIVACY/EXPERIENCE.
+Texts with small font size are potentially hiding information ONLY AND ONLY IF THE TEXT CONTENT HAS IMPORTANT INFORMATION ELSE ITS NOT DECEPTIVE.
+Similarly, button/texts with different background and font colors, making it stand out from other device filter buttons is NOT A DECPEPTIVE PATTERN BECAUSE CHOOSING IT OR NOT DOES NOT NEGATIVELY HARM THE USER EXPERIENCE.
+The different color button/text are a deceptive pattern IF AND ONLY IF IT USER IS BEING DECEIVED INTO CLICKING OR NOT. ELSE it is a standard design choice.
+Text prompting users to scroll down and explore more is not a nudge as it doesn't negatively affect the user.
+IF YOU THINK AN OPTION IS IS LESS PROMINENT THEN GIVE PROOF TO SUPPORT YOUR REASONING.
+
+ONLY GIVE THE NEW CSV FILE WITH VALUES SEPERATED BY PIPE (|) and not COMMAs. DO NOT GIVE ANY SURROUNDING ADDITIONAL TEXT.
+**DO NOT INTRODUCE ANY NEW ROWS IN THE FILE.**
+
+**Important Clarifications about Deceptive Patterns:**
+
+**Neutral Presentation of Choices is Not Deceptive**: Presenting multiple, equivalent options with visual differences (e.g., color, size) does not automatically constitute a nudge or deceptive practice. Look for manipulative intent or a clear disadvantage to the user associated with one of the options.
+
+**Negative Impact**: A "negative impact" in the context of nudges refers to demonstrable harm to the user, such as financial cost, privacy violations, unwanted subscriptions, or difficulty in reversing the action. Distinguish between helpful visual emphasis (e.g., highlighting a recommended product) and manipulative nudges designed to exploit users.
+
+**Context is Crucial**: The context surrounding a UI element is paramount. Consider the text, placement, and overall purpose of the element in addition to visual characteristics like color or size.
+
+**Cookie Notice Specifics**:
+A "Manage Preferences" option is acceptable if it provides a clear and easy way to reject all non-essential cookies. Users must have genuine control.
+Implied consent through continued use only applies if explicitly stated in the cookie notice.
+
+**Generic/Standard Ads**: Generic and standard advertisement text should still be labeled as disguised-ads.
+
+Taxonomy:
+
+{
+    "interface-interference": [
+        {
+            "definition": "Manipulation of the user interface that privileges certain actions over others.",
+            "values": [
+                {
+                    "name": "not-applicable",
+                    "description": ""
+                },
+                {
+                    "name": "confirmshaming",
+                    "description": "Confirm-shaming works by triggering guilt or shame or try to emotionally manipulate to coax users into opting into something they might not otherwise choose.",
+                    "example": [
+                        "No, I prefer to pay more",
+                        "Sorry, I'm on diet",
+                        "I'd like to help"
+                    ]
+                },
+                {
+                    "name": "fake-scarcity-fake-urgency",
+                    "description": "Limited stock or short ending time count-down used to create a false sense of urgency or scarcity to pressure users into making decisions or purchases. Normal ending date or preparing time is not fake urgency. This can also include ridiculous offers which are valid for a short duration",
+                    "example": [
+                        "Only 3 left in stock",
+                        "Offer ends in 5 minutes"
+                    ]
+                },
+                {
+                    "name": "nudge",
+                    "description": "Nudge users to perform a specific action or make choice. This can include use of colors such as indicating users to choose the brighter colored option IN A GROUP OF OPTIONS NEARBY, or not to choose the low saturation color option. This can include things like an 'Accept Cookies' button that is more prominent colored or **DIFFERENTLY COLORED** than the 'Reject Cookies'/'Deny' button. This however does not include normal design UI elements that are brightly or differently colored. It is deceptive if clicking the brightly colored button affects user's negatively. Text prompting/nudging users to scroll down is not considered a NUDGE and NOT A DECEPTIVE PATTERN.",
+                    "example": [
+                        "Redirecting users into sign-up by a shopping now link",
+                        "Using different background color for the pair of buttons represent accept and reject"
+                    ]
+                },
+                {
+                    "name": "hard-to-cancel",
+                    "description": "Hard to cancel is the interface makes users more difficult to see or find or navigate to opt-out some service or subscription."
+                }
+            ]
+        }
+    ],
+    "forced-action": [
+        {
+            "definition": "Requiring the user to perform a certain action to access (or continue to access) functionality without alternative options. Informing user by processding they agree to Terms of Service and have read Privacy Policy is NOT a forced-action",
+            "values": [
+                {
+                    "name": "not-applicable",
+                    "description": ""
+                },
+                {
+                    "name": "forced-action",
+                    "description": "Users are compelled to take a specific action to proceed since there is no other alternative options on webpage, **like having only an 'Accept' button**, lack of a **'Opt-out'/'Disable'/'Reject'/'Use necessary cookies only'/'Essential Cookies'** option in a cookie notice, or hiding the 'Opt-Out' option by making it less visible through small text size. Not giving user choices but agree to give information by default is also forced action. Another example is having a 'Cookie Setting' instead of a 'Reject All'/'Accept only Essential Cookies' option.",
+                    "example": [
+                        "By continuing to use our website , you acknowledge/agree the use of cookies",
+                        "We use cookies and similar technologies to improve your experience on our site. By continuing to use our site, you agree to our use of cookies."
+                    ]
+                }
+            ]
+        }
+    ],
+    "obstruction": [
+        {
+            "definition": "Making a process more difficult than it needs to be, with the intent of dissuading certain action(s).",
+            "values": [
+                {
+                    "name": "not-applicable",
+                    "description": ""
+                },
+                {
+                    "name": "hard-to-cancel",
+                    "description": "Making the cancellation process unnecessarily complicated or time-consuming, like requiring users to call a customer service hotline to cancel a subscription."
+                },
+                {
+                    "name": "pre-selection",
+                    "description": "The user is presented with a default option that has already been selected for them, in order to influence their decision-making. A common approach is to show a checked checkbox, though there are various other ways of doing this, including putting items in the user's shopping cart, or pre-selecting items in a series of steps. If the options are unchecked then it is not a deceptive pattern."
+                },
+                {
+                    "name": "visual-interference",
+                    "description": "Misleading design elements that distract or mislead users, preventing them from seeing or understanding important information. Text in searching bar and item/content showing 'Not Available' are not visual-interference. If there are lots of text in smaller font, with a larger sized text before, consider if the larger sized text is a Header or Title describing the smaller text. If so, then it is not a visual-interference. REMEMBER IT IS NOT VISUAL-INTERFERENCE IF SKIPPING THE TEXT DOES NOT AFFECT USER NEGATIVELY. Text with small font size especially ones that can be potentially an image ARE NOT DECEPTIVE UNLESS THE TEXT IS PROVIDING VALUABLE INFORMATION TO THE USER, and a small font is obstructing the user from understanding import context. Such deceptive patterns are visually interfering and obstructing the user."
+                },
+                {
+                    "name": "jargon",
+                    "description": "The use of confusing, technical, non-user-friendly, or overly complex language to prevent users from understanding important information."
+                }
+            ]
+        }
+    ],
+    "sneaking": [
+        {
+            "definition": "Attempting to hide, disguise, or delay the divulging of information that is relevant to the user.",
+            "values": [
+                {
+                    "name": "not-applicable",
+                    "description": ""
+                },
+                {
+                    "name": "hidden-subscription",
+                    "description": "Subscription are hidden within process, only to be revealed later on a bill or as a recurring charge",
+                    "example": [
+                        "By signing up for this email , you are agreeing to news , offers , and information from us"
+                    ]
+                },
+                {
+                    "name": "hidden-costs",
+                    "description": "Costs are hidden within process, only to be revealed later on a bill or as a recurring charge.",
+                    "example": [
+                        "Free trial, then $19.99/month",
+                        "Sign up, then $29.99/month",
+                        "Shipping costs is calculated at checkout"
+                    ]
+                },
+                {
+                    "name": "disguised-ads",
+                    "description": "Advertisement image or link are embedded within content and visually seems to be normal content, misleading users to click, or even GENERIC ADVERTISEMENTS. For example, a prominent 'Download' button that is actually an ad. Such buttons are located in blocks that say 'Ad' or 'Advertisement'. These can also be text that are irrelevant to the rest of the website, for instance text referring to 'Insurance' in a website with majority of remaining text is about finance. NOTE EVEN ADVERTISEMENTS THAT ARE CLEARLY LABELED SHOULD BE LABELLED AS DECEPTIVE. INCLUDING GENERIC ADVERTISING TEXTS."
+                },
+                {
+                    "name": "trick-wording",
+                    "description": "The use of confusing, misleading, or overly complex language to trick users into making certain choices, often leading to unintended subscription or purchase. For example, use of the word 'up-to' might mislead the customer into thinking they are getting the maximum discount, when in fact they may not.",
+                    "example": [
+                        "Free trial, then $19.99/month",
+                        "Check this box to opt out of our newsletter",
+                        "Sign up, then $29.99/month",
+                        "SAVE UP TO 40 %"
+                    ]
+                }
+            ]
+        }
+    ],
+    "non-deceptive": [
+        {
+            "definition": "Common, user-friendly design element that does not involve any deceptive pattern.",
+            "values": [
+                {
+                    "name": "not-applicable",
+                    "description": ""
+                }
+            ]
+        }
+    ]
+}
+
+Remember: Cookie notices stating that accepting all cookies indicates agreement, **DOES NOT IMPLY** that continued use also **equates** to consent unless explicitly written.
+Remember: Generic and Standard advertising text should be marked as disguised-ads.
+REMEMBER FOR COOKIE NOTICES: HAVING A 'Manage Preferences' RATHER THAN A 'Reject Cookies' option IS A FORCED-ACTION!.
+**AGAIN: Standard advertisement text should be labelled as disguised-ads.**
+**Generic/Standard Ads**: Generic and standard advertisement text should still be labeled as disguised-ads.
+
+Consider these points when analyzing:
+
+*   **Spatial positioning:** Use coordinates to understand the relative placement of elements and how they might influence user interaction.
+*   **Visual Interference:** Identify elements with smaller font sizes or less prominent colors that might hide important information.
+*   **Forced Action:** Determine if users are forced into taking a specific action due to the design, such as accepting all cookies.
+*   **Hidden Information:** Look for elements that might mislead users or hide crucial details, like subscription terms or costs.
+*   **Hidden Subscription/Costs:** Look for elements where they push/ask users to sign up for promotional services or for emails and such. These can be classified as hidden-subscription or hidden-costs, **even if the text clearly specifies that the user is signing up**. Standard subscription services or costs are considered **deceptive**. Getting a discount for signing up for emails **is** considered a hidden subscription.
+*   **Relational Elements:** Consider how different elements relate to each other and whether they contribute to a deceptive pattern.
+
+ONLY GIVE THE 3 NEW COLUMNS AS A CSV FILE WITH THE VALUES **SEPERATED BY PIPE (|) and not COMMAs**. DO NOT GIVE ANY SURROUNDING ADDITIONAL TEXT.
+**DO NOT INTRODUCE ANY NEW ROWS IN THE FILE.**
