@@ -1,4 +1,4 @@
-checkpoint_dir: checkpoints/Qwen/Qwen2.5-0.5B-Instruct
+checkpoint_dir: checkpoints/HuggingFaceTB/SmolLM2-135M-Instruct
 data:
   class_path: litgpt.data.DeceptivePatternsReasonFirst
   init_args:
@@ -34,7 +34,7 @@ optimizer:
     - 0.95
     lr: 0.0002
     weight_decay: 0.0
-out_dir: out/finetune/lora-qwen2_5-0.5b-reason-first
+out_dir: out/finetune/lora-smollm2-135m-reason-first
 precision: bf16-true
 quantize: null
 seed: 1337

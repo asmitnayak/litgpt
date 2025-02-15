@@ -1,11 +1,11 @@
-checkpoint_dir: checkpoints/Qwen/Qwen2.5-0.5B-Instruct
+checkpoint_dir: checkpoints/HuggingFaceTB/SmolLM2-1.7B-Instruct
 data:
-  class_path: litgpt.data.DeceptivePatternsReasonFirst
+  class_path: litgpt.data.DeceptivePatterns
   init_args:
     ignore_index: -100
     mask_prompt: false
     num_workers: 4
-    prompt_style: qwen2.5-dp-reason-first
+    prompt_style: qwen2.5-dp
     seed: 42
     val_split_fraction: 0.03847
 devices: 1
@@ -34,7 +34,7 @@ optimizer:
     - 0.95
     lr: 0.0002
     weight_decay: 0.0
-out_dir: out/finetune/lora-qwen2_5-0.5b-reason-first
+out_dir: out/finetune/lora-smollm2-1.7b
 precision: bf16-true
 quantize: null
 seed: 1337
