@@ -32,6 +32,7 @@ class DPChat:
         precision: Optional[str] = None,
         compile: bool = False,
         access_token: Optional[str] = None,
+        devices: int = 1,
     ):
         """
         Chat with a model.
@@ -52,7 +53,7 @@ class DPChat:
 
         self.precision = precision or get_default_supported_precision(training=False)
 
-        self.fabric = L.Fabric(devices=1, precision=precision, plugins=None)
+        self.fabric = L.Fabric(devices=devices, precision=precision, plugins=None)
 
         # Merge if this is a raw LoRA checkpoint
         self.checkpoint_path = self.checkpoint_dir / "lit_model.pth"
@@ -114,7 +115,6 @@ class DPChat:
             temperature=temperature, top_k=top_k, top_p=top_p, stop_tokens=self.stop_tokens
         )
         token_generator: Iterator[str] = self.tokenizer.decode_stream(y, device=self.fabric.device)
-        t0 = time.perf_counter()
 
         tokens_generated = 0
         generated_content = ""
@@ -123,8 +123,6 @@ class DPChat:
             if stream:
                 self.fabric.print(tok, end="", flush=True)
             generated_content += tok
-
-        t = time.perf_counter() - t0
 
         for block in self.model.transformer.h:
             block.attn.kv_cache.reset_parameters()
