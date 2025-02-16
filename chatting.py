@@ -4,7 +4,7 @@ import sys
 import time
 from pathlib import Path
 from pprint import pprint
-from typing import Iterator, List, Literal, Optional, Tuple
+from typing import Iterator, List, Literal, Optional, Tuple, Callable, Any
 
 import lightning as L
 import torch
@@ -124,7 +124,7 @@ def interact(model, tokenizer, prompt_style, fabric, temperature, max_new_tokens
 
 
 @torch.inference_mode()
-def main(
+def get_generate(
     checkpoint_dir: Path,
     *,
     max_new_tokens: int = 50,
@@ -136,7 +136,7 @@ def main(
     compile: bool = False,
     multiline: bool = False,
     access_token: Optional[str] = None,
-) -> None:
+) -> Callable[[Any], None]:
     """Chat with a model.
 
     Args:
@@ -171,7 +171,6 @@ def main(
     """
     checkpoint_dir = extend_checkpoint_dir(checkpoint_dir)
     pprint(locals())
-    print("HERE")
 
     precision = precision or get_default_supported_precision(training=False)
 
@@ -231,59 +230,59 @@ def main(
 
     print(f"Now chatting with {config.name}.\n{exit_instruction}\n")
     L.seed_everything(1234)
+    return interact
+    # interact(
+    #     multiline=multiline,
+    #     model=model,
+    #     tokenizer=tokenizer,
+    #     prompt_style=prompt_style,
+    #     fabric=fabric,
+    #     temperature=temperature,
+    #     max_new_tokens=(None if compile else max_new_tokens),
+    #     top_k=top_k,
+    #     top_p=top_p,
+    #     stop_tokens=stop_tokens
+    # )
+    #
+    # if fabric.device.type == "cuda":
+    #     fabric.print(f"\nMemory used: {torch.cuda.max_memory_allocated() / 1e9:.02f} GB", file=sys.stderr)
 
-    interact(
-        multiline=multiline,
-        model=model,
-        tokenizer=tokenizer,
-        prompt_style=prompt_style,
-        fabric=fabric,
-        temperature=temperature,
-        max_new_tokens=(None if compile else max_new_tokens),
-        top_k=top_k,
-        top_p=top_p,
-        stop_tokens=stop_tokens
-    )
 
-    if fabric.device.type == "cuda":
-        fabric.print(f"\nMemory used: {torch.cuda.max_memory_allocated() / 1e9:.02f} GB", file=sys.stderr)
-
-
-if __name__ == "__main__":
-    """Chat with a model.
-
-    Args:
-        checkpoint_dir: A local path to a directory containing the model weights or a valid model name.
-            You can get a list of valid model names via the `litgpt download list` command line argument.
-        max_new_tokens: The number of generation steps to take.
-        top_k: The number of top most probable tokens to consider in the sampling process.
-        top_p: If specified, it represents the cumulative probability threshold to consider in the sampling process.
-            In top-p sampling, the next token is sampled from the highest probability tokens
-            whose cumulative probability exceeds the threshold `top_p`. When specified,
-            it must be `0 <= top_p <= 1`. Here, `top_p=0` is equivalent
-            to sampling the most probable token, while `top_p=1` samples from the whole distribution.
-            It can be used in conjunction with `top_k` and `temperature` with the following order
-            of application:
-
-            1. `top_k` sampling
-            2. `temperature` scaling
-            3. `top_p` sampling
-
-            For more details, see https://arxiv.org/abs/1904.09751
-            or https://huyenchip.com/2024/01/16/sampling.html#top_p
-        temperature: A value controlling the randomness of the sampling process. Higher values result in more random
-            samples.
-        quantize: Whether to quantize the model and using which method:
-            - bnb.nf4, bnb.nf4-dq, bnb.fp4, bnb.fp4-dq: 4-bit quantization from bitsandbytes
-            - bnb.int8: 8-bit quantization from bitsandbytes
-            for more details, see https://github.com/Lightning-AI/litgpt/blob/main/tutorials/quantize.md
-        precision: Indicates the Fabric precision setting to use.
-        compile: Whether to use compilation to speed up token generation. Will increase startup time.
-        multiline: Whether to support multiline input prompts.
-        access_token: Optional API token to access models with restrictions.
-    """
-    checkpoint_dir = Path("out/finetune/lora-qwen2_5-3b/final/")
-    temperature = 0
-    multiline = True
-    max_new_token = 1024
-    main(checkpoint_dir, max_new_tokens=max_new_token, temperature=temperature, multiline=multiline)
+# if __name__ == "__main__":
+#     """Chat with a model.
+#
+#     Args:
+#         checkpoint_dir: A local path to a directory containing the model weights or a valid model name.
+#             You can get a list of valid model names via the `litgpt download list` command line argument.
+#         max_new_tokens: The number of generation steps to take.
+#         top_k: The number of top most probable tokens to consider in the sampling process.
+#         top_p: If specified, it represents the cumulative probability threshold to consider in the sampling process.
+#             In top-p sampling, the next token is sampled from the highest probability tokens
+#             whose cumulative probability exceeds the threshold `top_p`. When specified,
+#             it must be `0 <= top_p <= 1`. Here, `top_p=0` is equivalent
+#             to sampling the most probable token, while `top_p=1` samples from the whole distribution.
+#             It can be used in conjunction with `top_k` and `temperature` with the following order
+#             of application:
+#
+#             1. `top_k` sampling
+#             2. `temperature` scaling
+#             3. `top_p` sampling
+#
+#             For more details, see https://arxiv.org/abs/1904.09751
+#             or https://huyenchip.com/2024/01/16/sampling.html#top_p
+#         temperature: A value controlling the randomness of the sampling process. Higher values result in more random
+#             samples.
+#         quantize: Whether to quantize the model and using which method:
+#             - bnb.nf4, bnb.nf4-dq, bnb.fp4, bnb.fp4-dq: 4-bit quantization from bitsandbytes
+#             - bnb.int8: 8-bit quantization from bitsandbytes
+#             for more details, see https://github.com/Lightning-AI/litgpt/blob/main/tutorials/quantize.md
+#         precision: Indicates the Fabric precision setting to use.
+#         compile: Whether to use compilation to speed up token generation. Will increase startup time.
+#         multiline: Whether to support multiline input prompts.
+#         access_token: Optional API token to access models with restrictions.
+#     """
+#     checkpoint_dir = Path("out/finetune/lora-qwen2_5-3b/final/")
+#     temperature = 0
+#     multiline = True
+#     max_new_token = 1024
+#     main(checkpoint_dir, max_new_tokens=max_new_token, temperature=temperature, multiline=multiline)
