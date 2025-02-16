@@ -31,7 +31,6 @@ class DPChat:
         *,
         precision: Optional[str] = None,
         compile: bool = False,
-        multiline: bool = False,
         access_token: Optional[str] = None,
     ):
         """
@@ -48,7 +47,6 @@ class DPChat:
             compile: Whether to use compilation to speed up token generation. Will increase startup time.
             access_token: Optional API token to access models with restrictions.
         """
-
         self.checkpoint_dir = extend_checkpoint_dir(checkpoint_dir)
         pprint(locals())
 
