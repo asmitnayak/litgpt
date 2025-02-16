@@ -137,6 +137,7 @@ class DPChat:
                  stream=False):
         """
         Args:
+            stream: If True, the generated tokens are printed as they are generated.
             prompt: The prompt to start the conversation with.
             max_new_tokens: The number of generation steps to take.
             top_k: The number of top most probable tokens to consider in the sampling process.
