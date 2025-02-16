@@ -23,17 +23,12 @@ from litgpt.utils import (
     load_checkpoint,
 )
 
-from datasets import load_dataset
 from tqdm.auto import tqdm
 
 class DPChat:
     def __init__(self,
         checkpoint_dir: Path,
         *,
-        max_new_tokens: int = 50,
-        top_k: Optional[int] = 50,
-        top_p: float = 1.0,
-        temperature: float = 0.8,
         precision: Optional[str] = None,
         compile: bool = False,
         multiline: bool = False,
@@ -45,36 +40,14 @@ class DPChat:
         Args:
             checkpoint_dir: A local path to a directory containing the model weights or a valid model name.
                 You can get a list of valid model names via the `litgpt download list` command line argument.
-            max_new_tokens: The number of generation steps to take.
-            top_k: The number of top most probable tokens to consider in the sampling process.
-            top_p: If specified, it represents the cumulative probability threshold to consider in the sampling process.
-                In top-p sampling, the next token is sampled from the highest probability tokens
-                whose cumulative probability exceeds the threshold `top_p`. When specified,
-                it must be `0 <= top_p <= 1`. Here, `top_p=0` is equivalent
-                to sampling the most probable token, while `top_p=1` samples from the whole distribution.
-                It can be used in conjunction with `top_k` and `temperature` with the following order
-                of application:
-
-                1. `top_k` sampling
-                2. `temperature` scaling
-                3. `top_p` sampling
-
-                For more details, see https://arxiv.org/abs/1904.09751
-                or https://huyenchip.com/2024/01/16/sampling.html#top_p
-            temperature: A value controlling the randomness of the sampling process. Higher values result in more random
-                samples.
             quantize: Whether to quantize the model and using which method:
                 - bnb.nf4, bnb.nf4-dq, bnb.fp4, bnb.fp4-dq: 4-bit quantization from bitsandbytes
                 - bnb.int8: 8-bit quantization from bitsandbytes
                 for more details, see https://github.com/Lightning-AI/litgpt/blob/main/tutorials/quantize.md
             precision: Indicates the Fabric precision setting to use.
             compile: Whether to use compilation to speed up token generation. Will increase startup time.
-            multiline: Whether to support multiline input prompts.
             access_token: Optional API token to access models with restrictions.
         """
-        self.access_token = access_token
-        self.temperature = temperature
-        self.max_new_tokens = max_new_tokens
 
         self.checkpoint_dir = extend_checkpoint_dir(checkpoint_dir)
         pprint(locals())
@@ -125,21 +98,22 @@ class DPChat:
         print(f"Now chatting with {self.config.name}.\n")
         L.seed_everything(1234)
 
-    def process_prompt(self, prompt, top_k, top_p):
+    def process_prompt(self, prompt, temperature, max_new_tokens, top_k, top_p):
         prompt = self.prompt_style.apply(prompt=prompt)
         encoded_prompt = self.tokenizer.encode(prompt, device=self.fabric.device)
 
-        if self.max_new_tokens is None:
+        if max_new_tokens is None:
             max_returned_tokens = self.model.max_seq_length
         else:
             first_turn = self.model.mask_cache is None
-            max_returned_tokens = encoded_prompt.size(0) + self.max_new_tokens
+            max_returned_tokens = encoded_prompt.size(0) + max_new_tokens
             if first_turn or max_returned_tokens > self.model.max_seq_length:
                 self.model.max_seq_length = max_returned_tokens
                 self.model.set_kv_cache(batch_size=1, device=self.fabric.device)
 
         y: Iterator[torch.Tensor] = self.generate(
-            self.model, encoded_prompt, max_returned_tokens, temperature=self.temperature, top_k=top_k, top_p=top_p, stop_tokens=self.stop_tokens
+            self.model, encoded_prompt, max_returned_tokens,
+            temperature=temperature, top_k=top_k, top_p=top_p, stop_tokens=self.stop_tokens
         )
         token_generator: Iterator[str] = self.tokenizer.decode_stream(y, device=self.fabric.device)
         t0 = time.perf_counter()
@@ -158,15 +132,34 @@ class DPChat:
 
         return generated_content
 
-    def interact(self, top_k: Optional[int] = 50, top_p: float = 1.0):
-        data = load_dataset("WIPI/dp_finetuning", token=os.getenv("HF_TOKEN") if not self.access_token else self.access_token)
-        test_data = []
-        for entry in data['test']:
-            test_data.append({"instruction": entry['input'], "output": entry['output']})
+    def interact(self, prompt: str, temperature: float, max_new_tokens: int, top_k: int = 50, top_p: float = 1.0):
+        """
+
+        Args:
+            prompt:
+            max_new_tokens: The number of generation steps to take.
+            top_k: The number of top most probable tokens to consider in the sampling process.
+            top_p: If specified, it represents the cumulative probability threshold to consider in the sampling process.
+                In top-p sampling, the next token is sampled from the highest probability tokens
+                whose cumulative probability exceeds the threshold `top_p`. When specified,
+                it must be `0 <= top_p <= 1`. Here, `top_p=0` is equivalent
+                to sampling the most probable token, while `top_p=1` samples from the whole distribution.
+                It can be used in conjunction with `top_k` and `temperature` with the following order
+                of application:
+
+                1. `top_k` sampling
+                2. `temperature` scaling
+                3. `top_p` sampling
+
+                For more details, see https://arxiv.org/abs/1904.09751
+                or https://huyenchip.com/2024/01/16/sampling.html#top_p
+            temperature: A value controlling the randomness of the sampling process. Higher values result in more random
+                samples.
+        """
         return self.process_prompt(
-                    test_data[0]["instruction"],
-                    self.temperature,
-                    self.max_new_tokens,
+                    prompt,
+                    temperature,
+                    max_new_tokens,
                     top_k,
                     top_p
                 )
