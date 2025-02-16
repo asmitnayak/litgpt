@@ -24,6 +24,7 @@ from litgpt.utils import (
 )
 
 from datasets import load_dataset
+from tqdm.auto import tqdm
 
 class DPChat:
     def __init__(self,
@@ -72,6 +73,9 @@ class DPChat:
             access_token: Optional API token to access models with restrictions.
         """
         self.access_token = access_token
+        self.temperature = temperature
+        self.max_new_tokens = max_new_tokens
+
         self.checkpoint_dir = extend_checkpoint_dir(checkpoint_dir)
         pprint(locals())
 
@@ -121,28 +125,28 @@ class DPChat:
         print(f"Now chatting with {self.config.name}.\n")
         L.seed_everything(1234)
 
-    def process_prompt(self, prompt, temperature, max_new_tokens, top_k, top_p):
+    def process_prompt(self, prompt, top_k, top_p):
         prompt = self.prompt_style.apply(prompt=prompt)
         encoded_prompt = self.tokenizer.encode(prompt, device=self.fabric.device)
 
-        if max_new_tokens is None:
+        if self.max_new_tokens is None:
             max_returned_tokens = self.model.max_seq_length
         else:
             first_turn = self.model.mask_cache is None
-            max_returned_tokens = encoded_prompt.size(0) + max_new_tokens
+            max_returned_tokens = encoded_prompt.size(0) + self.max_new_tokens
             if first_turn or max_returned_tokens > self.model.max_seq_length:
                 self.model.max_seq_length = max_returned_tokens
                 self.model.set_kv_cache(batch_size=1, device=self.fabric.device)
 
         y: Iterator[torch.Tensor] = self.generate(
-            self.model, encoded_prompt, max_returned_tokens, temperature=temperature, top_k=top_k, top_p=top_p, stop_tokens=self.stop_tokens
+            self.model, encoded_prompt, max_returned_tokens, temperature=self.temperature, top_k=top_k, top_p=top_p, stop_tokens=self.stop_tokens
         )
         token_generator: Iterator[str] = self.tokenizer.decode_stream(y, device=self.fabric.device)
         t0 = time.perf_counter()
 
         tokens_generated = 0
         generated_content = ""
-        for tok in token_generator:
+        for tok in tqdm(token_generator):
             tokens_generated += 1
             self.fabric.print(tok, end="", flush=True)  # TODO: Change this
             generated_content += tok
@@ -154,15 +158,15 @@ class DPChat:
 
         return generated_content
 
-    def interact(self, temperature: float = 0.8, max_new_tokens: int = 50, top_k: Optional[int] = 50, top_p: float = 1.0):
+    def interact(self, top_k: Optional[int] = 50, top_p: float = 1.0):
         data = load_dataset("WIPI/dp_finetuning", token=os.getenv("HF_TOKEN") if not self.access_token else self.access_token)
         test_data = []
         for entry in data['test']:
             test_data.append({"instruction": entry['input'], "output": entry['output']})
         return self.process_prompt(
                     test_data[0]["instruction"],
-                    temperature,
-                    max_new_tokens,
+                    self.temperature,
+                    self.max_new_tokens,
                     top_k,
                     top_p
                 )
