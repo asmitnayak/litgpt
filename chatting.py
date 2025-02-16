@@ -115,8 +115,8 @@ def process_prompt(prompt, model, tokenizer, prompt_style, fabric, temperature, 
     fabric.print()
 
 
-def interact(model, tokenizer, prompt_style, fabric, temperature, max_new_tokens, top_k, top_p, stop_tokens):
-    data = load_dataset("WIPI/dp_finetuning", token=os.getenv("HF_TOKEN"))
+def interact(model, tokenizer, prompt_style, fabric, temperature, max_new_tokens, top_k, top_p, stop_tokens, access_token=None):
+    data = load_dataset("WIPI/dp_finetuning", token=os.getenv("HF_TOKEN") if not access_token else access_token)
     test_data = []
     for entry in data['test']:
         test_data.append({"instruction": entry['input'], "output": entry['output']})
