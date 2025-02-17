@@ -38,6 +38,12 @@ if [[ "$continue_script" =~ ^[Yy]$ ]]; then
     "meta-llama/Llama-3.2-3B-Instruct config_hub/finetune/dp-finetuning/llama3.2-3B/lora-reordered.yaml"
     "google/gemma-2-2b-it config_hub/finetune/dp-finetuning/gemma2-2B/lora.yaml"
     "google/gemma-2-2b-it config_hub/finetune/dp-finetuning/gemma2-2B/lora-reordered.yaml"
+    "Qwen/Qwen2.5-0.5B-Instruct config_hub/finetune/dp-finetuning/qwen2.5-0.5B/lora.yaml"
+    "Qwen/Qwen2.5-0.5B-Instruct config_hub/finetune/dp-finetuning/qwen2.5-0.5B/lora-reordered.yaml"
+    "Qwen/Qwen2.5-1.5B-Instruct config_hub/finetune/dp-finetuning/qwen2.5-1.5B/lora.yaml"
+    "Qwen/Qwen2.5-1.5B-Instruct config_hub/finetune/dp-finetuning/qwen2.5-1.5B/lora-reordered.yaml"
+    "Qwen/Qwen2.5-3B-Instruct config_hub/finetune/dp-finetuning/qwen2.5-3B/lora.yaml"
+    "Qwen/Qwen2.5-3B-Instruct config_hub/finetune/dp-finetuning/qwen2.5-3B/lora-reordered.yaml"
   )
 
   # Statement to confirm the number of models and configs
