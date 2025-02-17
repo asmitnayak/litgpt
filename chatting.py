@@ -54,7 +54,6 @@ class DPChat:
         self.precision = precision or get_default_supported_precision(training=False)
 
         self.fabric = L.Fabric(devices=devices, precision=precision, plugins=None)
-        self.fabric.launch()
 
         # Merge if this is a raw LoRA checkpoint
         self.checkpoint_path = self.checkpoint_dir / "lit_model.pth"
