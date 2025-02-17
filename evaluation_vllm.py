@@ -40,14 +40,14 @@ def load_model_tokenizer_sampling_params(checkpoint_dir, temperature=0.4, top_p=
     )
     return model, tokenizer, sampling_params
 
-def generate_responses_vllm_batch(model, sampling_params, is_reason_first=False, access_token=None):
+def generate_responses_vllm_batch(_model, _sampling_params, is_reason_first=False, access_token=None):
     test_data, data = load_test_dataset(access_token=os.getenv('HF_TOKEN') if not access_token else access_token)
 
     # colnames = ['Deceptive Patterns Category', 'Deceptive Patterns Subtype', 'Reasoning'] if is_reason_first else ['Reasoning', 'Deceptive Patterns Category', 'Deceptive Patterns Subtype']
     i = 0       # this is why shuffle=False in DataLoader
 
     for batch in tqdm(data):
-        outputs = model.generate(batch['instruction'], sampling_params, use_tqdm=False)
+        outputs = _model.generate(batch['instruction'], _sampling_params, use_tqdm=False)
         for _i, _outputs in enumerate(outputs):
             test_data[i]['response'] = _outputs.outputs[0].text # this is why shuffle=False in DataLoader
             i += 1
