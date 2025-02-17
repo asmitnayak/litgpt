@@ -34,7 +34,7 @@ optimizer:
     - 0.95
     lr: 0.0002
     weight_decay: 0.0
-out_dir: out/finetune/lora-lama3_2-3b
+out_dir: out/finetune/lora-llama3_2-3b
 precision: bf16-true
 quantize: null
 seed: 1337
