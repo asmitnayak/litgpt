@@ -1,0 +1,84 @@
+
+# The path to the base model's checkpoint directory to load for finetuning. (type: <class 'Path'>, default: checkpoints/stabilityai/stablelm-base-alpha-3b)
+checkpoint_dir: checkpoints/Qwen/Qwen2.5-1.5B-Instruct
+
+# Directory in which to save checkpoints and logs. (type: <class 'Path'>, default: out/lora)
+out_dir: out/finetune/full-qwen2_5-1.5b
+
+# The precision to use for finetuning. Possible choices: "bf16-true", "bf16-mixed", "32-true". (type: Optional[str], default: null)
+precision: bf16-true
+
+# How many devices/GPUs to use. (type: Union[int, str], default: 1)
+devices: 4
+
+# How many nodes to use. (type: int, default: 1)
+num_nodes: 1
+
+# Data-related arguments. If not provided, the default is ``litgpt.data.Alpaca``.
+data:
+  class_path: litgpt.data.DeceptivePatterns
+  init_args:
+    ignore_index: -100
+    mask_prompt: false
+    num_workers: 4
+    prompt_style: qwen2.5-dp
+    repo_id: WIPI/dp_finetuning-balanced
+    seed: 42
+    val_split_fraction: 0
+
+# Training-related arguments. See ``litgpt.args.TrainArgs`` for details
+train:
+  epochs: 2
+  global_batch_size: 6
+  log_interval: 1
+  lr_warmup_steps: 200
+  max_norm: null
+  max_seq_length: 8192
+  max_steps: null
+  max_tokens: null
+  micro_batch_size: 1
+  min_lr: 6.0e-05
+  save_interval: 800
+  tie_embeddings: null
+
+# Evaluation-related arguments. See ``litgpt.args.EvalArgs`` for details
+eval:
+
+  # Number of optimizer steps between evaluation calls (type: int, default: 100)
+  interval: 25000000
+
+  # Number of tokens to generate (type: Optional[int], default: 100)
+  max_new_tokens: 1024
+
+  # Number of iterations (type: int, default: 100)
+  max_iters: 100
+
+  # Whether to evaluate on the validation set at the beginning of the training
+  initial_validation: false
+
+  # Whether to evaluate on the validation set at the end the training
+  final_validation: false
+
+# The name of the logger to send metrics to. (type: Literal['wandb', 'tensorboard', 'csv'], default: csv)
+logger_name: csv
+
+# The random seed to use for reproducibility. (type: int, default: 1337)
+seed: 1337
+
+# Optimizer-related arguments
+optimizer:
+
+  class_path: torch.optim.AdamW
+
+  init_args:
+
+    #   (type: float, default: 0.001)
+    lr: 0.0002
+
+    #   (type: float, default: 0.01)
+    weight_decay: 0.0
+
+    #   (type: tuple, default: (0.9,0.999))
+    betas:
+      - 0.9
+      - 0.95
