@@ -351,7 +351,7 @@ class ChatML(PromptStyle):
 
 class Qwen2_5(ChatML):
     def __init__(self):
-        super().__init__("You are Qwen, created by Alibaba Cloud. You are a helpful assistant.")
+        super().__init__("You are a helpful assistant.")
 
 # Added custom system prompt for Deceptive Patterns
 class Qwen2_5_DP(ChatML):
