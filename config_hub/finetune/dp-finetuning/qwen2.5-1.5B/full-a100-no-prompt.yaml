@@ -36,7 +36,7 @@ train:
   max_seq_length: 16384
   max_steps: null
   max_tokens: null
-  micro_batch_size: 1
+  micro_batch_size: 2
   min_lr: 6.0e-05
   save_interval: 800
   tie_embeddings: null
