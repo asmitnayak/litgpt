@@ -22,14 +22,14 @@ data:
     mask_prompt: false
     num_workers: 4
     prompt_style: llama3-dp
-    repo_id: WIPI/dp_finetuning-balanced
+    repo_id: WIPI/dp_finetuning-balanced2
     seed: 42
     val_split_fraction: 0
 
 # Training-related arguments. See ``litgpt.args.TrainArgs`` for details
 train:
-  epochs: 5
-  global_batch_size: 16
+  epochs: 15
+  global_batch_size: 32
   log_interval: 1
   lr_warmup_steps: 200
   max_norm: null
