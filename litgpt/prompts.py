@@ -115,7 +115,7 @@ class Falcon(PromptStyle):
 class Falcon3(PromptStyle):
     def apply(self, prompt: str, **kwargs: str) -> str:
         return f"<|user|>\n{prompt}<|endoftext|>\n<|assistant|>\n"
-    
+
     def stop_tokens(self, tokenizer: "Tokenizer") -> Tuple[List[int], ...]:
         return (
             [tokenizer.eos_id],
@@ -284,7 +284,7 @@ class R1Base(PromptStyle):
             def encode_message(message: Dict[str, str]) -> str:
                 role = message["role"]
                 content = message["content"].strip()
-                
+
                 if role == "system":
                     return content  # System prompt is prepended at the start
                 elif role == "user":
@@ -391,7 +391,7 @@ class Gemma(PromptStyle):
 class OLMo(PromptStyle):
     def apply(self, prompt: str, **kwargs: str) -> str:
         return f"<|endoftext|><|user|>\n{prompt}\n<|assistant|>\n"
-    
+
 
 class ChatML(PromptStyle):
     def __init__(self, system_message: str):
