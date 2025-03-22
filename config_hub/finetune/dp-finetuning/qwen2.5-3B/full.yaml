@@ -28,7 +28,7 @@ data:
 
 # Training-related arguments. See ``litgpt.args.TrainArgs`` for details
 train:
-  epochs: 10
+  epochs: 2
   global_batch_size: 8
   log_interval: 1
   lr_warmup_steps: 200
