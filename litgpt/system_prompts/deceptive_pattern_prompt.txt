@@ -232,7 +232,6 @@ AMC|text|(909, 739)|(943, 749)|10|White, (RGB: 255, 255, 255)|Charade, (RGB: 41,
 
 
 Output:
-Deceptive Design Category|Deceptive Design Subtype|Reasoning
 non-deceptive|not-applicable|Website name and logo
 non-deceptive|not-applicable|Navigation button
 non-deceptive|not-applicable|Navigation button
@@ -270,7 +269,6 @@ PRE - BLACK FRIDAY |text|(26, 336)|(391, 361)|25|Black, (RGB: 0, 0, 0)|Monza, (R
 
 
 Output:
-Deceptive Design Category|Deceptive Design Subtype|Reasoning
 non-deceptive|not-applicable|This is a generic promotional message for Black Friday.
 non-deceptive|not-applicable|This is a standard category label.
 interface-interference|nudge|The use of a less prominent color (Tapa) might be a nudge to discourage clicking, although it could also be a design choice.
@@ -314,7 +312,6 @@ Required only |text|(982, 778)|(1071, 791)|13|Blue Ribbon, (RGB: 27, 106, 254)|W
 
 
 Output:
-Deceptive Design Category|Deceptive Design Subtype|Reasoning
 non-deceptive|not-applicable|Website name
 non-deceptive|not-applicable|Navigation information
 non-deceptive|not-applicable|Navigation button
