@@ -8,28 +8,34 @@ from tqdm.auto import tqdm
 from transformers import AutoTokenizer
 from vllm import LLM, SamplingParams
 
-from litgpt.prompts import Qwen2_5_DP
+from litgpt.prompts import Qwen2_5_DP, Qwen2_5
 
 
-def load_test_dataset(batch_size=100, access_token=None):
-    data = load_dataset("WIPI/dp_finetuning", token=access_token)
+def load_test_dataset(batch_size=80, access_token=None):
+    data = load_dataset("WIPI/dp-annotated2", token=access_token)
+    #data = load_dataset("WIPI/dp_finetuning-balanced2", token=access_token)
+    dl_data = []
     test_data = []
-    for entry in tqdm(data['test']):
-        test_data.append({
+    for entry in tqdm(data['data']):
+        dl_data.append({
             "instruction": Qwen2_5_DP().apply(entry['input']),
-            "output": entry['output'],
             # too much RAM wastage
             # "output_df": pd.read_csv(StringIO(entry['output']), sep='|', header=None,names=['Deceptive Patterns Category', 'Deceptive Patterns Subtype', 'Reasoning'])
         })
+        test_data.append({            
+            "input": entry['input'],
+            "output": entry['output'],
+        })
     dl = DataLoader(
-        test_data,
+        dl_data,
         batch_size=batch_size,
         shuffle=False,  # no shuffle might harm generate_responses_vllm_batch method
     )
+    
     return test_data, dl
 
 def load_model_tokenizer_sampling_params(checkpoint_dir, temperature=0.4, top_p=0.8, min_p=0.1, seed=1234, max_tokens=6200):
-    model = LLM(model=checkpoint_dir, tensor_parallel_size=1, max_model_len=max_tokens)
+    model = LLM(model=checkpoint_dir, tensor_parallel_size=2, max_model_len=max_tokens)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint_dir, local_files_only=True)
     sampling_params = SamplingParams(
         temperature=temperature,
@@ -47,7 +53,7 @@ def generate_responses_vllm_batch(_model, _sampling_params, is_reason_first=Fals
     i = 0       # this is why shuffle=False in DataLoader
 
     for batch in tqdm(data):
-        outputs = _model.generate(batch['instruction'], _sampling_params, use_tqdm=False)
+        outputs = _model.generate(batch['instruction'], _sampling_params, use_tqdm=True)
         for _i, _outputs in enumerate(outputs):
             test_data[i]['response'] = _outputs.outputs[0].text # this is why shuffle=False in DataLoader
             i += 1
@@ -76,8 +82,8 @@ if __name__ == "__main__":
         args.max_tokens
     )
     response_json = generate_responses_vllm_batch(model, sampling_params, access_token=args.access_token)
-    os.makedirs('response_json', exist_ok=True)
-    filename = os.path.join('response_json', f"{args.checkpoint_dir.rstrip('/').split('/')[-1]}.json")
+    os.makedirs('response_json2', exist_ok=True)
+    filename = os.path.join('response_json2', f"{args.checkpoint_dir.rstrip('/').split('/')[-1]}.json")
     json.dump(response_json, open(filename, 'w'))
 
 
