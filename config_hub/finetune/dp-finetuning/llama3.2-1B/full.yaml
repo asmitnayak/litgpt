@@ -1,6 +1,6 @@
 
 # The path to the base model's checkpoint directory to load for finetuning. (type: <class 'Path'>, default: checkpoints/stabilityai/stablelm-base-alpha-3b)
-checkpoint_dir: checkpoints/meta-llama/Llama-3.2-1B
+checkpoint_dir: checkpoints/meta-llama/Llama-3.2-1B-Instruct
 
 # Directory in which to save checkpoints and logs. (type: <class 'Path'>, default: out/lora)
 out_dir: out/finetune/full-llama-3.2-1B-16k
