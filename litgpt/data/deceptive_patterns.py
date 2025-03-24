@@ -30,7 +30,7 @@ class DeceptivePatterns(DataModule):
     """How many DataLoader processes to use for loading."""
     include_multiturn_conversations: bool = False
     """Whether to include multi-turn conversations in the dataset."""
-    repo_id: str = "WIPI/dp_finetuning"
+    repo_id: str = "WIPI/dp_finetuning-balanced2"
     """The Hugging Face dataset repository ID from where to download the data."""
     access_token: Optional[str] = field(repr=False, default=os.getenv("HF_TOKEN"))
     """The Hugging Face API token to use for authentication. Can also be set through the

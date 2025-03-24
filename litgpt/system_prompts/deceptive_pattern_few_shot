@@ -1,0 +1,909 @@
+You are given a special CSV file with values separated by pipe (|), containing tabular data in text format from a website and a taxonomy to detect deceptive patterns.
+
+Deceptive patterns are tricks used in websites and apps that make users do things that they didn't mean to.
+
+The CSV file contains the text segment, type of UI element, it top and bottom co-ordinates, the corresponding font size, the background color, and the font color of the text segment.
+
+Your task is to follow the taxonomy and generate labels for each row of the CSV file with three additional columns: Deceptive Design Category, Deceptive Design Subtype, and Reasoning.
+The first column would list the high-level category of the deceptive design from the taxonomy, the next column would list the subtype under that category, and lastly, the third column would contain the *detailed* reasoning for choosing that potential deceptive design or for choosing it to be non-deceptive.
+
+Remember to understand the texts' spatial positioning, using their co-ordinates to understand their relative meaning.
+For example, a prominent 'Download' button close to the text 'Advertisement' is probably a disguised ad, compared to a 'Download' text away from it.
+Also even if the elements seems to be a standard, clear and prominent text for advertisement, subscription offer, or other possible deceptive text, you are to classify it as such.
+For instance, for a promotional offer, clearly stating a trial duration SHOULD NOT BE MARKED NON-DECEPTIVE, rather should be marked as if it was not prominent. In this example, it would be a case of hidden-subscription.
+Any advertisement text, prominent or not, clear or not, standard or not, should be marked as such. There should not be any reasoning like: Standard advertisement text.
+A clearly labeled advertisement must also be labelled as a DECEPTIVE PATTERN.
+EVEN **GENERIC ADVERTISEMENT TEXTS** MUST BE LABELLED AS A **DECEPTIVE PATTERN**.
+Text presented as search suggestions or related businesses are not ADVERTISEMENT and NOT A DECEPTIVE PATTERN.
+Text prompting/nudging users to scroll down is **NOT CONSIDERED A NUDGE** AND IS NOT A DECEPTIVE PATTERN.
+A download button for a product belonging to the site is NOT a disguised ad.
+**Menu items** referring to ADVERTISE on the platform/site are also NOT a disguised-ad and should be classified as NON-DECEPTIVE.
+
+Texts that out of place from majority of the site, like a Insurace-peddling text in a file mainly about finance market, should be treated as an advertisment.
+
+Pay close attention for texts that inform users of data policies and usage and check if font size is small, these are examples of visual interference.
+
+When you mark something as deceptive, make sure to mark related elements to be deceptive too. ALWAYS LOOK FOR RELATIONAL ELEMENTS. For instance, a lack of 'Reject Cookies' make the 'Accept All Cookies' button a forced-action, but it also make the 'Cookie Setting' button as forced action too as now the user has to click on it to set their preferences.
+
+Before classifying forced-action, remember to review if the alternative options are on other lines of given CSV file.
+For instance, a cookie notice tell using that just using the site they consent to the cookies is forced action.
+However, a button/text in the same notice saying: 'Use necessary cookies only' wouldn't be forced action. But if it is significantly less prominent than the 'Accept All' button it would be visual interference (nudge).
+Also a cookie notice that has both variants of accept and reject button with not significant change in their colors, is **NOT A DECEPTIVE PATTERN** as they are not nudging the user towards one button over the other.
+A cookie notice may state that accepting all cookies indicates agreement, implying continued use also equates to consent, but if the option of "Only Necessary"/"Reject Cookies" or similar is present then its not forced-action.
+If **ONLY** "Manage my Preferences"/"Link to cookie preference settings" options is available, then it is forced-action.
+Continued use is **not forced** as long as the user is given option to only allow essential cookies.
+
+Also note: Normal design UI elements that are brightly or differently colored, for instance buttons for various selection or filters, like Restaurant, Houses, Stores etc, do not constitute deceptive patterns.
+Only if the UI element is hiding valuable information that may affect user's choice about something, then it would be a deceptive pattern --> nudge.
+
+**Smaller font size and less prominent color compared to other categories is not necessarily a deceptive pattern**, UNLESS MISSING THESE TEXTS WOULD NEGATIVELY AFFECT USER PRIVACY/EXPERIENCE.
+Texts with small font size are potentially hiding information ONLY AND ONLY IF THE TEXT CONTENT HAS IMPORTANT INFORMATION ELSE ITS NOT DECEPTIVE.
+Similarly, button/texts with different background and font colors, making it stand out from other device filter buttons is NOT A DECPEPTIVE PATTERN BECAUSE CHOOSING IT OR NOT DOES NOT NEGATIVELY HARM THE USER EXPERIENCE.
+The different color button/text are a deceptive pattern IF AND ONLY IF IT USER IS BEING DECEIVED INTO CLICKING OR NOT. ELSE it is a standard design choice.
+Text prompting users to scroll down and explore more is not a nudge as it doesn't negatively affect the user.
+IF YOU THINK AN OPTION IS IS LESS PROMINENT THEN GIVE PROOF TO SUPPORT YOUR REASONING.
+
+ONLY GIVE THE NEW CSV FILE WITH VALUES SEPERATED BY PIPE (|) and not COMMAs. DO NOT GIVE ANY SURROUNDING ADDITIONAL TEXT.
+**DO NOT INTRODUCE ANY NEW ROWS IN THE FILE.**
+
+**Important Clarifications about Deceptive Patterns:**
+
+**Neutral Presentation of Choices is Not Deceptive**: Presenting multiple, equivalent options with visual differences (e.g., color, size) does not automatically constitute a nudge or deceptive practice. Look for manipulative intent or a clear disadvantage to the user associated with one of the options.
+
+**Negative Impact**: A "negative impact" in the context of nudges refers to demonstrable harm to the user, such as financial cost, privacy violations, unwanted subscriptions, or difficulty in reversing the action. Distinguish between helpful visual emphasis (e.g., highlighting a recommended product) and manipulative nudges designed to exploit users.
+
+**Context is Crucial**: The context surrounding a UI element is paramount. Consider the text, placement, and overall purpose of the element in addition to visual characteristics like color or size.
+
+**Cookie Notice Specifics**:
+A "Manage Preferences" option is acceptable if it provides a clear and easy way to reject all non-essential cookies. Users must have genuine control.
+Implied consent through continued use only applies if explicitly stated in the cookie notice.
+
+**Generic/Standard Ads**: Generic and standard advertisement text should still be labeled as disguised-ads.
+
+Taxonomy:
+
+{
+    "interface-interference": [
+        {
+            "definition": "Manipulation of the user interface that privileges certain actions over others.",
+            "values": [
+                {
+                    "name": "not-applicable",
+                    "description": ""
+                },
+                {
+                    "name": "confirmshaming",
+                    "description": "Confirm-shaming works by triggering guilt or shame or try to emotionally manipulate to coax users into opting into something they might not otherwise choose.",
+                    "example": [
+                        "No, I prefer to pay more",
+                        "Sorry, I'm on diet",
+                        "I'd like to help"
+                    ]
+                },
+                {
+                    "name": "fake-scarcity-fake-urgency",
+                    "description": "Limited stock or short ending time count-down used to create a false sense of urgency or scarcity to pressure users into making decisions or purchases. Normal ending date or preparing time is not fake urgency. This can also include ridiculous offers which are valid for a short duration",
+                    "example": [
+                        "Only 3 left in stock",
+                        "Offer ends in 5 minutes"
+                    ]
+                },
+                {
+                    "name": "nudge",
+                    "description": "Nudge users to perform a specific action or make choice. This can include use of colors such as indicating users to choose the brighter colored option IN A GROUP OF OPTIONS NEARBY, or not to choose the low saturation color option. This can include things like an 'Accept Cookies' button that is more prominent colored or **DIFFERENTLY COLORED** than the 'Reject Cookies'/'Deny' button. This however does not include normal design UI elements that are brightly or differently colored. It is deceptive if clicking the brightly colored button affects user's negatively. Text prompting/nudging users to scroll down is not considered a NUDGE and NOT A DECEPTIVE PATTERN.",
+                    "example": [
+                        "Redirecting users into sign-up by a shopping now link",
+                        "Using different background color for the pair of buttons represent accept and reject"
+                    ]
+                },
+                {
+                    "name": "hard-to-cancel",
+                    "description": "Hard to cancel is the interface makes users more difficult to see or find or navigate to opt-out some service or subscription."
+                }
+            ]
+        }
+    ],
+    "forced-action": [
+        {
+            "definition": "Requiring the user to perform a certain action to access (or continue to access) functionality without alternative options. Informing user by processding they agree to Terms of Service and have read Privacy Policy is NOT a forced-action",
+            "values": [
+                {
+                    "name": "not-applicable",
+                    "description": ""
+                },
+                {
+                    "name": "forced-action",
+                    "description": "Users are compelled to take a specific action to proceed since there is no other alternative options on webpage, **like having only an 'Accept' button**, lack of a **'Opt-out'/'Disable'/'Reject'/'Use necessary cookies only'/'Essential Cookies'** option in a cookie notice, or hiding the 'Opt-Out' option by making it less visible through small text size. Not giving user choices but agree to give information by default is also forced action. Another example is having a 'Cookie Setting' instead of a 'Reject All'/'Accept only Essential Cookies' option.",
+                    "example": [
+                        "By continuing to use our website , you acknowledge/agree the use of cookies",
+                        "We use cookies and similar technologies to improve your experience on our site. By continuing to use our site, you agree to our use of cookies."
+                    ]
+                }
+            ]
+        }
+    ],
+    "obstruction": [
+        {
+            "definition": "Making a process more difficult than it needs to be, with the intent of dissuading certain action(s).",
+            "values": [
+                {
+                    "name": "not-applicable",
+                    "description": ""
+                },
+                {
+                    "name": "hard-to-cancel",
+                    "description": "Making the cancellation process unnecessarily complicated or time-consuming, like requiring users to call a customer service hotline to cancel a subscription."
+                },
+                {
+                    "name": "pre-selection",
+                    "description": "The user is presented with a default option that has already been selected for them, in order to influence their decision-making. A common approach is to show a checked checkbox, though there are various other ways of doing this, including putting items in the user's shopping cart, or pre-selecting items in a series of steps. If the options are unchecked then it is not a deceptive pattern."
+                },
+                {
+                    "name": "visual-interference",
+                    "description": "Misleading design elements that distract or mislead users, preventing them from seeing or understanding important information. Text in searching bar and item/content showing 'Not Available' are not visual-interference. If there are lots of text in smaller font, with a larger sized text before, consider if the larger sized text is a Header or Title describing the smaller text. If so, then it is not a visual-interference. REMEMBER IT IS NOT VISUAL-INTERFERENCE IF SKIPPING THE TEXT DOES NOT AFFECT USER NEGATIVELY. Text with small font size especially ones that can be potentially an image ARE NOT DECEPTIVE UNLESS THE TEXT IS PROVIDING VALUABLE INFORMATION TO THE USER, and a small font is obstructing the user from understanding import context. Such deceptive patterns are visually interfering and obstructing the user."
+                },
+                {
+                    "name": "jargon",
+                    "description": "The use of confusing, technical, non-user-friendly, or overly complex language to prevent users from understanding important information."
+                }
+            ]
+        }
+    ],
+    "sneaking": [
+        {
+            "definition": "Attempting to hide, disguise, or delay the divulging of information that is relevant to the user.",
+            "values": [
+                {
+                    "name": "not-applicable",
+                    "description": ""
+                },
+                {
+                    "name": "hidden-subscription",
+                    "description": "Subscription are hidden within process, only to be revealed later on a bill or as a recurring charge",
+                    "example": [
+                        "By signing up for this email , you are agreeing to news , offers , and information from us"
+                    ]
+                },
+                {
+                    "name": "hidden-costs",
+                    "description": "Costs are hidden within process, only to be revealed later on a bill or as a recurring charge.",
+                    "example": [
+                        "Free trial, then $19.99/month",
+                        "Sign up, then $29.99/month",
+                        "Shipping costs is calculated at checkout"
+                    ]
+                },
+                {
+                    "name": "disguised-ads",
+                    "description": "Advertisement image or link are embedded within content and visually seems to be normal content, misleading users to click, or even GENERIC ADVERTISEMENTS. For example, a prominent 'Download' button that is actually an ad. Such buttons are located in blocks that say 'Ad' or 'Advertisement'. These can also be text that are irrelevant to the rest of the website, for instance text referring to 'Insurance' in a website with majority of remaining text is about finance. NOTE EVEN ADVERTISEMENTS THAT ARE CLEARLY LABELED SHOULD BE LABELLED AS DECEPTIVE. INCLUDING GENERIC ADVERTISING TEXTS."
+                },
+                {
+                    "name": "trick-wording",
+                    "description": "The use of confusing, misleading, or overly complex language to trick users into making certain choices, often leading to unintended subscription or purchase. For example, use of the word 'up-to' might mislead the customer into thinking they are getting the maximum discount, when in fact they may not.",
+                    "example": [
+                        "Free trial, then $19.99/month",
+                        "Check this box to opt out of our newsletter",
+                        "Sign up, then $29.99/month",
+                        "SAVE UP TO 40 %"
+                    ]
+                }
+            ]
+        }
+    ],
+    "non-deceptive": [
+        {
+            "definition": "Common, user-friendly design element that does not involve any deceptive pattern.",
+            "values": [
+                {
+                    "name": "not-applicable",
+                    "description": ""
+                }
+            ]
+        }
+    ]
+}
+
+I'll show you a few examples to help you better understand the task.
+Please note that these just show some special cases and DO NOT represent all possible cases:
+
+Example 1:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+hulu|text|(38, 27)|(101, 48)|21|Black Pearl, (RGB: 11, 22, 46)|Shamrock, (RGB: 28, 231, 131)
+Originals|button|(405, 28)|(477, 44)|16|Firefly, (RGB: 20, 36, 50)|Spun Pearl, (RGB: 168, 175, 189)
+TV Shows|button|(176, 30)|(253, 42)|12|Black Pearl, (RGB: 15, 28, 47)|Spun Pearl, (RGB: 168, 175, 189)
+Movies|button|(301, 30)|(357, 42)|12|Firefly, (RGB: 18, 33, 50)|Spun Pearl, (RGB: 168, 175, 189)
+Kids|button|(525, 30)|(559, 42)|12|Firefly, (RGB: 21, 38, 48)|Spun Pearl, (RGB: 168, 175, 189)
+Networks|button|(607, 30)|(682, 42)|12|Timber Green, (RGB: 25, 44, 51)|Spun Pearl, (RGB: 168, 175, 189)
+LOG IN|text|(1112, 30)|(1162, 41)|11|Heavy Metal, (RGB: 41, 49, 45)|Spun Pearl, (RGB: 168, 175, 189)
+START YOUR FREE TRIAL|text|(875, 31)|(1056, 42)|11|Cape Cod, (RGB: 49, 66, 64)|White, (RGB: 255, 255, 255)
+ALL YOUR FAVORITE TV IN ONE PLACE  Watch thousands of shows and movies , with plans starting  at $ 9.99 / month . |text|(275, 93)|(944, 172)|18|Wedgewood, (RGB: 69, 124, 157)|Alto, (RGB: 222, 222, 222)
+START YOUR FREE TRIAL|button|(519, 221)|(701, 232)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 4, 4, 5)
+Hulu free trial available for new and eligible returning Hulu subscribers only . Cancel anytime . Additional terms  apply .|text|(349, 270)|(872, 294)|8|Fountain Blue, (RGB: 90, 160, 189)|Jet Stream, (RGB: 189, 222, 209)
+Networks|text|(42, 436)|(260, 468)|32|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 22, 24, 29)
+ENTERTAINMENT|text|(41, 528)|(165, 540)|12|White, (RGB: 255, 255, 255)|Charade, (RGB: 41, 44, 51)
+abc|text|(423, 627)|(509, 660)|33|Crimson, (RGB: 223, 0, 45)|Black, (RGB: 0, 0, 0)
+амс|text|(996, 634)|(1086, 662)|28|Black, (RGB: 0, 0, 0)|White, (RGB: 255, 255, 255)
+[ adult swim ]|text|(686, 635)|(823, 659)|24|Black, (RGB: 0, 0, 0)|White, (RGB: 255, 255, 255)
+A & E|text|(48, 739)|(78, 750)|11|White, (RGB: 255, 255, 255)|Charade, (RGB: 41, 44, 51)
+ABC|text|(335, 739)|(365, 749)|10|White, (RGB: 255, 255, 255)|Charade, (RGB: 41, 44, 51)
+Adult Swim|text|(622, 739)|(702, 750)|11|White, (RGB: 255, 255, 255)|Charade, (RGB: 41, 44, 51)
+AMC|text|(909, 739)|(943, 749)|10|White, (RGB: 255, 255, 255)|Charade, (RGB: 41, 44, 51)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+hulu|text|(38, 27)|(101, 48)|21|Black Pearl, (RGB: 11, 22, 46)|Shamrock, (RGB: 28, 231, 131)|non-deceptive|not-applicable|Website name and logo
+Originals|button|(405, 28)|(477, 44)|16|Firefly, (RGB: 20, 36, 50)|Spun Pearl, (RGB: 168, 175, 189)|non-deceptive|not-applicable|Navigation button
+TV Shows|button|(176, 30)|(253, 42)|12|Black Pearl, (RGB: 15, 28, 47)|Spun Pearl, (RGB: 168, 175, 189)|non-deceptive|not-applicable|Navigation button
+Movies|button|(301, 30)|(357, 42)|12|Firefly, (RGB: 18, 33, 50)|Spun Pearl, (RGB: 168, 175, 189)|non-deceptive|not-applicable|Navigation button
+Kids|button|(525, 30)|(559, 42)|12|Firefly, (RGB: 21, 38, 48)|Spun Pearl, (RGB: 168, 175, 189)|non-deceptive|not-applicable|Navigation button
+Networks|button|(607, 30)|(682, 42)|12|Timber Green, (RGB: 25, 44, 51)|Spun Pearl, (RGB: 168, 175, 189)|non-deceptive|not-applicable|Navigation button
+LOG IN|text|(1112, 30)|(1162, 41)|11|Heavy Metal, (RGB: 41, 49, 45)|Spun Pearl, (RGB: 168, 175, 189)|non-deceptive|not-applicable|Login button
+START YOUR FREE TRIAL|text|(875, 31)|(1056, 42)|11|Cape Cod, (RGB: 49, 66, 64)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Free trial button
+ALL YOUR FAVORITE TV IN ONE PLACE  Watch thousands of shows and movies , with plans starting  at $ 9.99 / month . |text|(275, 93)|(944, 172)|18|Wedgewood, (RGB: 69, 124, 157)|Alto, (RGB: 222, 222, 222)|non-deceptive|not-applicable|Informative text
+START YOUR FREE TRIAL|button|(519, 221)|(701, 232)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 4, 4, 5)|non-deceptive|not-applicable|Free trial button
+Hulu free trial available for new and eligible returning Hulu subscribers only . Cancel anytime . Additional terms  apply .|text|(349, 270)|(872, 294)|8|Fountain Blue, (RGB: 90, 160, 189)|Jet Stream, (RGB: 189, 222, 209)|obstruction|visual-interference|The text of term is in small font and light color which distract or mislead users, preventing them from seeing or understanding important information.
+Networks|text|(42, 436)|(260, 468)|32|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 22, 24, 29)|non-deceptive|not-applicable|Section header
+ENTERTAINMENT|text|(41, 528)|(165, 540)|12|White, (RGB: 255, 255, 255)|Charade, (RGB: 41, 44, 51)|non-deceptive|not-applicable|Section subheader
+abc|text|(423, 627)|(509, 660)|33|Crimson, (RGB: 223, 0, 45)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Network logo
+амс|text|(996, 634)|(1086, 662)|28|Black, (RGB: 0, 0, 0)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Network logo
+[ adult swim ]|text|(686, 635)|(823, 659)|24|Black, (RGB: 0, 0, 0)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Network logo
+A & E|text|(48, 739)|(78, 750)|11|White, (RGB: 255, 255, 255)|Charade, (RGB: 41, 44, 51)|non-deceptive|not-applicable|Network name
+ABC|text|(335, 739)|(365, 749)|10|White, (RGB: 255, 255, 255)|Charade, (RGB: 41, 44, 51)|non-deceptive|not-applicable|Network name
+Adult Swim|text|(622, 739)|(702, 750)|11|White, (RGB: 255, 255, 255)|Charade, (RGB: 41, 44, 51)|non-deceptive|not-applicable|Network name
+AMC|text|(909, 739)|(943, 749)|10|White, (RGB: 255, 255, 255)|Charade, (RGB: 41, 44, 51)|non-deceptive|not-applicable|Network name
+
+
+Example 2:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+BLACK FRIDAY IS HERE - SHOP TODAY & COLLECT YOUR POINTS TO GET MORE REWARDS + |text|(292, 19)|(919, 30)|11|Black, (RGB: 0, 0, 0)|White, (RGB: 255, 255, 255)
+LADIES |text|(176, 90)|(226, 100)|10|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+MEN |button|(259, 90)|(291, 100)|10|White, (RGB: 255, 255, 255)|Tapa, (RGB: 117, 117, 117)
+BABY |button|(324, 90)|(362, 100)|10|White, (RGB: 255, 255, 255)|Tapa, (RGB: 117, 117, 117)
+SPORT |button|(460, 90)|(508, 100)|10|White, (RGB: 255, 255, 255)|Tapa, (RGB: 117, 117, 117)
+SALE |button|(541, 90)|(577, 99)|9|White, (RGB: 255, 255, 255)|Tapa, (RGB: 117, 117, 117)
+KIDS |button|(394, 91)|(426, 100)|9|White, (RGB: 255, 255, 255)|Tapa, (RGB: 117, 117, 117)
+PRE - BLACK FRIDAY |text|(26, 336)|(391, 361)|25|Black, (RGB: 0, 0, 0)|Monza, (RGB: 199, 0, 22)
+50 % OFF EVERYTHING |text|(28, 403)|(1190, 704)|116|Black, (RGB: 0, 0, 0)|Monza, (RGB: 199, 0, 22)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+BLACK FRIDAY IS HERE - SHOP TODAY & COLLECT YOUR POINTS TO GET MORE REWARDS + |text|(292, 19)|(919, 30)|11|Black, (RGB: 0, 0, 0)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|This is a generic promotional message for Black Friday.
+LADIES |text|(176, 90)|(226, 100)|10|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|This is a standard category label.
+MEN |button|(259, 90)|(291, 100)|10|White, (RGB: 255, 255, 255)|Tapa, (RGB: 117, 117, 117)|interface-interference|nudge|The use of a less prominent color (Tapa) might be a nudge to discourage clicking, although it could also be a design choice.
+BABY |button|(324, 90)|(362, 100)|10|White, (RGB: 255, 255, 255)|Tapa, (RGB: 117, 117, 117)|interface-interference|nudge|Similar to 'MEN', the less prominent color could be a nudge.
+SPORT |button|(460, 90)|(508, 100)|10|White, (RGB: 255, 255, 255)|Tapa, (RGB: 117, 117, 117)|interface-interference|nudge|Similar to 'MEN' and 'BABY', the less prominent color could be a nudge.
+SALE |button|(541, 90)|(577, 99)|9|White, (RGB: 255, 255, 255)|Tapa, (RGB: 117, 117, 117)|interface-interference|nudge|Smaller font size and less prominent color compared to 'LADIES' could be a nudge to direct users away from the sale section.
+KIDS |button|(394, 91)|(426, 100)|9|White, (RGB: 255, 255, 255)|Tapa, (RGB: 117, 117, 117)|interface-interference|nudge|Similar to 'SALE', the smaller font size and less prominent color could be a nudge.
+PRE - BLACK FRIDAY |text|(26, 336)|(391, 361)|25|Black, (RGB: 0, 0, 0)|Monza, (RGB: 199, 0, 22)|non-deceptive|not-applicable|This is a standard promotional message.
+50 % OFF EVERYTHING |text|(28, 403)|(1190, 704)|116|Black, (RGB: 0, 0, 0)|Monza, (RGB: 199, 0, 22)|non-deceptive|not-applicable|This is a standard promotional message with a large font size for emphasis.
+
+
+Example 3:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+"Find a Store | Help | Join Us | Sign In"|text|(915, 12)|(1165, 24)|12|Wild Sand, (RGB: 245, 245, 245)|Havelock Blue, (RGB: 68, 137, 208)
+Black Friday|text|(401, 57)|(493, 74)|15|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 24, 17, 24)
+Women Kids|text|(630, 58)|(744, 71)|12|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 17, 17, 17)
+Q Search|button|(920, 58)|(1003, 74)|15|Wild Sand, (RGB: 245, 245, 245)|Tapa, (RGB: 112, 112, 114)
+Men|text|(574, 59)|(606, 71)|12|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 17, 17, 17)
+Jordan|text|(769, 59)|(820, 70)|11|White, (RGB: 255, 255, 255)|Haiti, (RGB: 17, 21, 63)
+New|text|(517, 60)|(550, 71)|11|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 17, 17, 17)
+Up to 60 % Off : Use Code BFRIDAY|text|(519, 120)|(717, 131)|11|Black Haze, (RGB: 247, 247, 247)|Vulcan, (RGB: 17, 17, 17)
+Nike Shoes & Sneakers ( 1715 )|text|(48, 178)|(389, 203)|21|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 17, 17, 17)
+Hide Filters|text|(940, 188)|(1025, 201)|12|White, (RGB: 255, 255, 255)|Tussock, (RGB: 217, 142, 70)
+Pick Up Today|unchecked switch|(48, 242)|(155, 260)|16|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 17, 17, 24)
+Lifestyle  Jordan  Running Basketball  Training & Gym  Soccer  Skateboarding  Football  Baseball  Golf  Nike By You  Boots  Tennis  Track & Field  Sandals & Slides|text|(51, 313)|(178, 768)|12|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 17, 17, 17)
+Air Jordan 1 Low SE Big Kids ' Shoes  4 Colors  $ 93.97 $ 110|text|(598, 529)|(748, 628)|14|White, (RGB: 255, 255, 255)|Tapa, (RGB: 112, 112, 114)
+Nike Dunk Low Retro Premium Men's Shoes  7 Colors  $ 81.97 $ 125  34 % off  Extra 30 % w / BFRIDAY|text|(890, 530)|(1117, 692)|13|White, (RGB: 255, 255, 255)|Salem, (RGB: 0, 125, 72)
+Best Seller  Nike Dunk Low Retro Men's Shoes  10 Colors  $ 79.97 $ 115  30 % off  Extra 30 % w / BFRIDAY|text|(308, 532)|(487, 719)|13|White, (RGB: 255, 255, 255)|Salem, (RGB: 0, 125, 72)
+14 % off|text|(599, 649)|(662, 661)|12|White, (RGB: 255, 255, 255)|Salem, (RGB: 0, 125, 72)
+CODE BFRIDAY|text|(1121, 803)|(1158, 819)|6|Rangoon Green, (RGB: 29, 29, 29)|Quill Gray, (RGB: 215, 215, 215)
+UP TO 60 % OFF  SELECT STYLES|text|(985, 804)|(1062, 819)|6|Rangoon Green, (RGB: 27, 27, 27)|Nobel, (RGB: 181, 181, 181)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+"Find a Store | Help | Join Us | Sign In"|text|(915, 12)|(1165, 24)|12|Wild Sand, (RGB: 245, 245, 245)|Havelock Blue, (RGB: 68, 137, 208)|non-deceptive|not-applicable|These are standard website links.
+Black Friday|text|(401, 57)|(493, 74)|15|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 24, 17, 24)|non-deceptive|not-applicable|This is a common sales promotion.
+Women Kids|text|(630, 58)|(744, 71)|12|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 17, 17, 17)|non-deceptive|not-applicable|These are standard product categories.
+Q Search|button|(920, 58)|(1003, 74)|15|Wild Sand, (RGB: 245, 245, 245)|Tapa, (RGB: 112, 112, 114)|non-deceptive|not-applicable|This is a standard search bar.
+Men|text|(574, 59)|(606, 71)|12|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 17, 17, 17)|non-deceptive|not-applicable|This is a standard product category.
+Jordan|text|(769, 59)|(820, 70)|11|White, (RGB: 255, 255, 255)|Haiti, (RGB: 17, 21, 63)|non-deceptive|not-applicable|This is a standard product category.
+New|text|(517, 60)|(550, 71)|11|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 17, 17, 17)|non-deceptive|not-applicable|This is a standard product category.
+Up to 60 % Off : Use Code BFRIDAY|text|(519, 120)|(717, 131)|11|Black Haze, (RGB: 247, 247, 247)|Vulcan, (RGB: 17, 17, 17)|sneaking|trick-wording|"Text ""up to"" does not describe the actual promotion, trick users into making certain choices, often leading to unintended subscription or purchase. "
+Nike Shoes & Sneakers ( 1715 )|text|(48, 178)|(389, 203)|21|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 17, 17, 17)|non-deceptive|not-applicable|This is a standard product category title.
+Hide Filters|text|(940, 188)|(1025, 201)|12|White, (RGB: 255, 255, 255)|Tussock, (RGB: 217, 142, 70)|non-deceptive|not-applicable|This is a standard filter toggle.
+Pick Up Today|unchecked switch|(48, 242)|(155, 260)|16|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 17, 17, 24)|non-deceptive|not-applicable|This is a standard delivery option.
+Lifestyle  Jordan  Running Basketball  Training & Gym  Soccer  Skateboarding  Football  Baseball  Golf  Nike By You  Boots  Tennis  Track & Field  Sandals & Slides|text|(51, 313)|(178, 768)|12|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 17, 17, 17)|non-deceptive|not-applicable|These are standard product categories.
+Air Jordan 1 Low SE Big Kids ' Shoes  4 Colors  $ 93.97 $ 110|text|(598, 529)|(748, 628)|14|White, (RGB: 255, 255, 255)|Tapa, (RGB: 112, 112, 114)|sneaking|trick-wording|The crossed-out price could be misleading, potentially inflating the perceived discount.
+Nike Dunk Low Retro Premium Men's Shoes  7 Colors  $ 81.97 $ 125  34 % off  Extra 30 % w / BFRIDAY|text|(890, 530)|(1117, 692)|13|White, (RGB: 255, 255, 255)|Salem, (RGB: 0, 125, 72)|sneaking|trick-wording|Multiple discounts presented together (34% off + extra 30%) can be confusing and potentially misleading about the final price.
+Best Seller  Nike Dunk Low Retro Men's Shoes  10 Colors  $ 79.97 $ 115  30 % off  Extra 30 % w / BFRIDAY|text|(308, 532)|(487, 719)|13|White, (RGB: 255, 255, 255)|Salem, (RGB: 0, 125, 72)|sneaking|trick-wording|Similar to the previous entry, the combined discounts can be misleading.
+14 % off|text|(599, 649)|(662, 661)|12|White, (RGB: 255, 255, 255)|Salem, (RGB: 0, 125, 72)|non-deceptive|not-applicable|This is a standard discount presentation.
+CODE BFRIDAY|text|(1121, 803)|(1158, 819)|6|Rangoon Green, (RGB: 29, 29, 29)|Quill Gray, (RGB: 215, 215, 215)|non-deceptive|not-applicable|This is a reminder of the discount code.
+UP TO 60 % OFF  SELECT STYLES|text|(985, 804)|(1062, 819)|6|Rangoon Green, (RGB: 27, 27, 27)|Nobel, (RGB: 181, 181, 181)|non-deceptive|not-applicable|This clarifies that the discount applies to select items.
+
+
+Example 4:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+UNLOCK |text|(572, 212)|(660, 225)|13|Spring Wood, (RGB: 249, 247, 244)|Black, (RGB: 0, 0, 0)
+10 % OFF & FREE DELIVERY ON YOUR FIRST ORDER Sign up to our newsletter to get 10 % off your first purchase . Be the first to know our most exciting deals , offers , & much more ! |text|(410, 243)|(827, 399)|14|Spring Wood, (RGB: 249, 247, 244)|Fuzzy Wuzzy Brown, (RGB: 203, 68, 74)
+Email Address |text|(422, 444)|(528, 455)|11|White, (RGB: 255, 255, 255)|Rangoon Green, (RGB: 31, 31, 31)
+YES , GIVE ME 10 % OFF |text|(526, 514)|(709, 528)|14|Black, (RGB: 0, 0, 0)|White, (RGB: 255, 255, 255)
+NO I'LL PAY FULL PRICE |text|(519, 578)|(716, 591)|13|Spring Wood, (RGB: 249, 247, 244)|Black, (RGB: 0, 0, 0)
+Fashion  SEND ME UPDATES ABOUT Home  Jewellery |unchecked checkbox|(448, 634)|(733, 676)|12|Spring Wood, (RGB: 249, 247, 244)|Black, (RGB: 0, 0, 0)
+Beauty |unchecked checkbox|(758, 665)|(810, 678)|13|Spring Wood, (RGB: 249, 247, 244)|Mountain Mist, (RGB: 147, 146, 145)
+TJC uses cookies in order to offer you the most relevant information . By continuing to browse you are accepting this . Change Settings ACCEPT & CLOSE |text|(39, 786)|(1183, 801)|14|Vulcan, (RGB: 16, 16, 16)|White, (RGB: 255, 255, 255)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+UNLOCK |text|(572, 212)|(660, 225)|13|Spring Wood, (RGB: 249, 247, 244)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Standard text, no deceptive design detected.
+10 % OFF & FREE DELIVERY ON YOUR FIRST ORDER Sign up to our newsletter to get 10 % off your first purchase . Be the first to know our most exciting deals , offers , & much more ! |text|(410, 243)|(827, 399)|14|Spring Wood, (RGB: 249, 247, 244)|Fuzzy Wuzzy Brown, (RGB: 203, 68, 74)|non-deceptive|not-applicable|Standard promotional text, no deceptive design detected.
+Email Address |text|(422, 444)|(528, 455)|11|White, (RGB: 255, 255, 255)|Rangoon Green, (RGB: 31, 31, 31)|non-deceptive|not-applicable|Standard text, no deceptive design detected.
+YES , GIVE ME 10 % OFF |text|(526, 514)|(709, 528)|14|Black, (RGB: 0, 0, 0)|White, (RGB: 255, 255, 255)|interface-interference|confirmshaming|The 'YES' button is phrased positively, while the 'NO' button is phrased negatively, which can trigger guilt or shame to coax users into opting into the newsletter.
+NO I'LL PAY FULL PRICE |text|(519, 578)|(716, 591)|13|Spring Wood, (RGB: 249, 247, 244)|Black, (RGB: 0, 0, 0)|interface-interference|confirmshaming|The 'YES' button is phrased positively, while the 'NO' button is phrased negatively, which can trigger guilt or shame to coax users into opting into the newsletter.
+Fashion  SEND ME UPDATES ABOUT Home  Jewellery |unchecked checkbox|(448, 634)|(733, 676)|12|Spring Wood, (RGB: 249, 247, 244)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Standard checkbox, no deceptive design detected.
+Beauty |unchecked checkbox|(758, 665)|(810, 678)|13|Spring Wood, (RGB: 249, 247, 244)|Mountain Mist, (RGB: 147, 146, 145)|non-deceptive|not-applicable|Standard checkbox, no deceptive design detected.
+TJC uses cookies in order to offer you the most relevant information . By continuing to browse you are accepting this . Change Settings ACCEPT & CLOSE |text|(39, 786)|(1183, 801)|14|Vulcan, (RGB: 16, 16, 16)|White, (RGB: 255, 255, 255)|forced-action|forced-action|The user is forced to accept cookies by continuing to browse the website. There is no option to reject or opt-out of cookies.
+
+
+Example 5:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+ANI VIEW |text|(13, 42)|(229, 58)|16|Firefly, (RGB: 9, 43, 63)|White, (RGB: 255, 255, 255)
+Client Login |text|(931, 42)|(1026, 58)|15|Firefly, (RGB: 9, 43, 63)|White, (RGB: 255, 255, 255)
+Resources Company |text|(584, 43)|(740, 57)|12|Firefly, (RGB: 9, 43, 63)|Seashell, (RGB: 241, 241, 241)
+Get a demo |button|(1069, 43)|(1164, 55)|12|Thunderbird, (RGB: 217, 38, 27)|White, (RGB: 255, 255, 255)
+Products Solutions |button|(408, 44)|(554, 55)|11|Firefly, (RGB: 9, 43, 63)|Quarter Spanish White, (RGB: 241, 241, 224)
+Get a Demo . |text|(146, 99)|(368, 119)|20|French Pass, (RGB: 191, 231, 247)|Haiti, (RGB: 24, 27, 49)
+No credit card required . |text|(145, 143)|(429, 171)|24|French Pass, (RGB: 191, 231, 247)|Haiti, (RGB: 24, 27, 49)
+Email * |text|(580, 156)|(622, 167)|11|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 0, 0, 8)
+Country * |text|(838, 157)|(896, 168)|11|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 0, 0, 8)
+Please Select |text|(853, 190)|(952, 202)|12|Black Squeeze, (RGB: 245, 248, 250)|Black Squeeze, (RGB: 245, 248, 250)
+Talk to our experts to learn about : |text|(145, 198)|(369, 211)|13|French Pass, (RGB: 191, 231, 247)|Martinique, (RGB: 51, 34, 74)
+Aniview's offering - Ad Server , Player , CMS , CTV  Solution , SSAI , SDK  The best way to monetize across Web , Mobile & CTV Use cases , platform training , 24x7 support and ad operations |text|(166, 238)|(518, 364)|13|French Pass, (RGB: 191, 231, 247)|Venice Blue, (RGB: 29, 80, 153)
+Company name * |text|(579, 238)|(689, 251)|13|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 0, 0, 8)
+Website URL * |text|(579, 320)|(671, 331)|11|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 0, 0, 0)
+Who are you ? * |text|(579, 401)|(678, 415)|12|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 0, 0, 0)
+Aniview takes pride in customer privacy and is deeply committed to it . The information provided would help us contact you with updates on relevant content , products , and services . For more information , check out our Privacy Policy |text|(124, 436)|(523, 562)|14|French Pass, (RGB: 191, 231, 247)|Rangoon Green, (RGB: 24, 24, 24)
+Please Select |text|(595, 436)|(694, 448)|12|Black Squeeze, (RGB: 245, 248, 250)|Black Squeeze, (RGB: 245, 248, 250)
+"What are you interested in ? *  Video Ad Server  SSAI  Marketplace Other  We value your privacy  We use cookies to enhance your browsing experience , serve personalized content , and analyze traffic . By clicking "" Accept "" , you consent to our use of cookies . To learn about our policies , please visit Privacy Policy and Data Management "|unchecked checkbox|(578, 484)|(1152, 713)|14|White, (RGB: 255, 255, 255)|Shark, (RGB: 33, 33, 33)
+Your Message * |text|(579, 631)|(680, 643)|12|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 8, 0, 0)
+0 of 500 max charac |text|(595, 665)|(742, 677)|12|Black Squeeze, (RGB: 245, 248, 250)|Black Squeeze, (RGB: 245, 248, 250)
+I agree to Aniview's Pr |unchecked checkbox|(603, 744)|(741, 758)|14|Wild Sand, (RGB: 245, 245, 245)|Endeavour, (RGB: 8, 86, 166)
+DENY |button|(838, 750)|(876, 760)|10|White, (RGB: 255, 255, 255)|Science Blue, (RGB: 24, 99, 220)
+ACCEPT |button|(1022, 750)|(1083, 762)|12|Torch Red, (RGB: 255, 0, 59)|White, (RGB: 255, 255, 255)
+This reCAPTCHA is for testing protected by reCAPTCHA  Privacy - Terms |text|(581, 779)|(744, 822)|10|Azure Radiance, (RGB: 26, 115, 232)|White, (RGB: 255, 255, 255)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+ANI VIEW |text|(13, 42)|(229, 58)|16|Firefly, (RGB: 9, 43, 63)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Website title.
+Client Login |text|(931, 42)|(1026, 58)|15|Firefly, (RGB: 9, 43, 63)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Client login link.
+Resources Company |text|(584, 43)|(740, 57)|12|Firefly, (RGB: 9, 43, 63)|Seashell, (RGB: 241, 241, 241)|non-deceptive|not-applicable|Navigation menu item.
+Get a demo |button|(1069, 43)|(1164, 55)|12|Thunderbird, (RGB: 217, 38, 27)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Call to action button.
+Products Solutions |button|(408, 44)|(554, 55)|11|Firefly, (RGB: 9, 43, 63)|Quarter Spanish White, (RGB: 241, 241, 224)|non-deceptive|not-applicable|Navigation menu item.
+Get a Demo . |text|(146, 99)|(368, 119)|20|French Pass, (RGB: 191, 231, 247)|Haiti, (RGB: 24, 27, 49)|non-deceptive|not-applicable|Form title.
+No credit card required . |text|(145, 143)|(429, 171)|24|French Pass, (RGB: 191, 231, 247)|Haiti, (RGB: 24, 27, 49)|non-deceptive|not-applicable|Form subtitle.
+Email * |text|(580, 156)|(622, 167)|11|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 0, 0, 8)|non-deceptive|not-applicable|Form label.
+Country * |text|(838, 157)|(896, 168)|11|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 0, 0, 8)|non-deceptive|not-applicable|Form label.
+Please Select |text|(853, 190)|(952, 202)|12|Black Squeeze, (RGB: 245, 248, 250)|Black Squeeze, (RGB: 245, 248, 250)|non-deceptive|not-applicable|Placeholder text in dropdown.
+Talk to our experts to learn about : |text|(145, 198)|(369, 211)|13|French Pass, (RGB: 191, 231, 247)|Martinique, (RGB: 51, 34, 74)|non-deceptive|not-applicable|Form subtitle.
+Aniview's offering - Ad Server , Player , CMS , CTV  Solution , SSAI , SDK  The best way to monetize across Web , Mobile & CTV Use cases , platform training , 24x7 support and ad operations |text|(166, 238)|(518, 364)|13|French Pass, (RGB: 191, 231, 247)|Venice Blue, (RGB: 29, 80, 153)|non-deceptive|not-applicable|Description of Aniview's offerings.
+Company name * |text|(579, 238)|(689, 251)|13|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 0, 0, 8)|non-deceptive|not-applicable|Form label.
+Website URL * |text|(579, 320)|(671, 331)|11|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Form label.
+Who are you ? * |text|(579, 401)|(678, 415)|12|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Form label.
+Aniview takes pride in customer privacy and is deeply committed to it . The information provided would help us contact you with updates on relevant content , products , and services . For more information , check out our Privacy Policy |text|(124, 436)|(523, 562)|14|French Pass, (RGB: 191, 231, 247)|Rangoon Green, (RGB: 24, 24, 24)|non-deceptive|not-applicable|Privacy information.
+Please Select |text|(595, 436)|(694, 448)|12|Black Squeeze, (RGB: 245, 248, 250)|Black Squeeze, (RGB: 245, 248, 250)|non-deceptive|not-applicable|Placeholder text in dropdown.
+"What are you interested in ? *  Video Ad Server  SSAI  Marketplace Other  We value your privacy  We use cookies to enhance your browsing experience , serve personalized content , and analyze traffic . By clicking "" Accept "" , you consent to our use of cookies . To learn about our policies , please visit Privacy Policy and Data Management "|unchecked checkbox|(578, 484)|(1152, 713)|14|White, (RGB: 255, 255, 255)|Shark, (RGB: 33, 33, 33)|non-deceptive|not-applicable|Form elements
+Your Message * |text|(579, 631)|(680, 643)|12|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 8, 0, 0)|non-deceptive|not-applicable|Form label.
+0 of 500 max charac |text|(595, 665)|(742, 677)|12|Black Squeeze, (RGB: 245, 248, 250)|Black Squeeze, (RGB: 245, 248, 250)|non-deceptive|not-applicable|Character count indicator.
+I agree to Aniview's Pr |unchecked checkbox|(603, 744)|(741, 758)|14|Wild Sand, (RGB: 245, 245, 245)|Endeavour, (RGB: 8, 86, 166)|non-deceptive|not-applicable|Privacy policy agreement.
+DENY |button|(838, 750)|(876, 760)|10|White, (RGB: 255, 255, 255)|Science Blue, (RGB: 24, 99, 220)|non-deceptive|not-applicable|Deny button for cookie consent.
+ACCEPT |button|(1022, 750)|(1083, 762)|12|Torch Red, (RGB: 255, 0, 59)|White, (RGB: 255, 255, 255)|interface-interference|nudge|The Accept button for the cookie notices is visibly more prominent than the Deny Call to action button.
+This reCAPTCHA is for testing protected by reCAPTCHA  Privacy - Terms |text|(581, 779)|(744, 822)|10|Azure Radiance, (RGB: 26, 115, 232)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|reCAPTCHA information.
+
+
+Example 6:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+Our Black Friday sale is live . Details|text|(499, 12)|(724, 24)|11|Oil, (RGB: 32, 29, 30)|Hint of Red, (RGB: 248, 248, 248)
+Store FROM THE NEW YORK TIMES|text|(553, 56)|(701, 108)|10|White, (RGB: 255, 255, 255)|Tuatara, (RGB: 54, 54, 54)
+Q Search|text|(25, 59)|(98, 72)|13|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+8 Sign in|text|(1026, 60)|(1092, 74)|13|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Custom Gifts|text|(765, 143)|(850, 155)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Best Sellers|text|(254, 144)|(332, 155)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Featured Collections|text|(392, 144)|(527, 155)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Shop By Category|text|(587, 144)|(706, 158)|14|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Newsstand|text|(910, 144)|(983, 155)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Find Out First|text|(527, 281)|(711, 303)|22|Green White, (RGB: 235, 233, 231)|Oil, (RGB: 32, 29, 30)
+Sign up for exclusive offers and get 10 % off your first order|text|(420, 342)|(816, 355)|13|Green White, (RGB: 235, 233, 231)|Oil, (RGB: 32, 29, 30)
+Email Address|text|(413, 398)|(508, 409)|11|White, (RGB: 255, 255, 255)|Star Dust, (RGB: 153, 153, 153)
+SUBSCRIBE|text|(571, 465)|(662, 476)|11|Black, (RGB: 0, 0, 0)|White, (RGB: 255, 255, 255)
+By clicking Subscribe , you agree to our Terms of Use . You may opt out or Contact Us at anytime . To learn more about our privacy practices , please see our Privacy Policy . |text|(406, 531)|(830, 558)|10|Green White, (RGB: 235, 233, 231)|Tapa, (RGB: 119, 119, 119)
+A holiday sale to buzz about . Find the perfect gift , and enjoy 25 % off your order . |text|(140, 621)|(478, 755)|21|Jungle Mist, (RGB: 180, 217, 219)|Black, (RGB: 0, 0, 0)
+GENIUS|text|(843, 696)|(1083, 734)|38|Westar, (RGB: 223, 220, 212)|Schooner, (RGB: 136, 133, 127)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+Our Black Friday sale is live . Details|text|(499, 12)|(724, 24)|11|Oil, (RGB: 32, 29, 30)|Hint of Red, (RGB: 248, 248, 248)|non-deceptive|not-applicable|This text provides information about a sale.
+Store FROM THE NEW YORK TIMES|text|(553, 56)|(701, 108)|10|White, (RGB: 255, 255, 255)|Tuatara, (RGB: 54, 54, 54)|non-deceptive|not-applicable|This text indicates the source of the store.
+Q Search|text|(25, 59)|(98, 72)|13|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|This is a standard search bar element.
+8 Sign in|text|(1026, 60)|(1092, 74)|13|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|This is a standard sign-in button.
+Custom Gifts|text|(765, 143)|(850, 155)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|This is a navigation link.
+Best Sellers|text|(254, 144)|(332, 155)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|This is a navigation link.
+Featured Collections|text|(392, 144)|(527, 155)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|This is a navigation link.
+Shop By Category|text|(587, 144)|(706, 158)|14|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|This is a navigation link.
+Newsstand|text|(910, 144)|(983, 155)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|This is a navigation link.
+Find Out First|text|(527, 281)|(711, 303)|22|Green White, (RGB: 235, 233, 231)|Oil, (RGB: 32, 29, 30)|non-deceptive|not-applicable|This text introduces a promotion.
+Sign up for exclusive offers and get 10 % off your first order|text|(420, 342)|(816, 355)|13|Green White, (RGB: 235, 233, 231)|Oil, (RGB: 32, 29, 30)|sneaking|hidden-subscription|Here the text implies a 10% discount if the user sign up for promotional text.
+Email Address|text|(413, 398)|(508, 409)|11|White, (RGB: 255, 255, 255)|Star Dust, (RGB: 153, 153, 153)|sneaking|hidden-subscription|Email input field to sign up for promotional emails.
+SUBSCRIBE|text|(571, 465)|(662, 476)|11|Black, (RGB: 0, 0, 0)|White, (RGB: 255, 255, 255)|sneaking|hidden-subscription|Subscribe button
+By clicking Subscribe , you agree to our Terms of Use . You may opt out or Contact Us at anytime . To learn more about our privacy practices , please see our Privacy Policy . |text|(406, 531)|(830, 558)|10|Green White, (RGB: 235, 233, 231)|Tapa, (RGB: 119, 119, 119)|non-deceptive|not-applicable|This text informs users about terms and conditions.
+A holiday sale to buzz about . Find the perfect gift , and enjoy 25 % off your order . |text|(140, 621)|(478, 755)|21|Jungle Mist, (RGB: 180, 217, 219)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|This text advertises a holiday sale.
+GENIUS|text|(843, 696)|(1083, 734)|38|Westar, (RGB: 223, 220, 212)|Schooner, (RGB: 136, 133, 127)|non-deceptive|not-applicable|This text could be a brand name or slogan.
+
+
+Example 7:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+LAS Rewards |checked radio button|(651, 26)|(724, 35)|9|White, (RGB: 255, 255, 255)|Charade, (RGB: 35, 43, 53)
+Contact |checked radio button|(874, 26)|(918, 37)|11|White, (RGB: 255, 255, 255)|Mako, (RGB: 69, 75, 84)
+Gift Cards |checked radio button|(771, 27)|(827, 35)|8|White, (RGB: 255, 255, 255)|Nevada, (RGB: 107, 112, 119)
+Pro Shop & Academy |checked radio button|(963, 27)|(1083, 40)|12|White, (RGB: 255, 255, 255)|Charade, (RGB: 35, 43, 53)
+Sign In |button|(1125, 27)|(1165, 37)|10|White, (RGB: 255, 255, 255)|Charade, (RGB: 38, 45, 55)
+Lancaster ARCHERY SUPPLY . |text|(91, 80)|(207, 115)|12|White, (RGB: 255, 255, 255)|Black, (RGB: 2, 3, 2)
+SHOP BRANDS DEALS BLOG |text|(260, 87)|(538, 98)|10|White, (RGB: 255, 255, 255)|Charade, (RGB: 35, 43, 53)
+Search |text|(736, 87)|(781, 98)|11|White, (RGB: 255, 255, 255)|Shady Lady, (RGB: 161, 161, 169)
+LAS Reward Members unlock 10X bonus reward points on select items . * Shop |text|(388, 155)|(834, 166)|11|Confetti, (RGB: 240, 218, 74)|Red Beech, (RGB: 124, 48, 12)
+This website uses cookies |text|(175, 274)|(371, 286)|12|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+We use cookies to personalize content and ads , provide social media features , and to analyze our traffic . We also share information about your use of our site with our social media , advertising and analytics partners who may combine it with other information that you've provided to them or that they've collected from your use of their services .  F |text|(129, 305)|(1029, 375)|27|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+La ARCH |text|(1134, 343)|(1163, 371)|12|Black, (RGB: 1, 1, 1)|Chicago, (RGB: 88, 83, 80)
+Ord |text|(128, 414)|(157, 428)|14|Black, (RGB: 0, 0, 0)|Silver, (RGB: 199, 199, 199)
+Preferences |text|(454, 431)|(540, 442)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Statistics |text|(689, 431)|(756, 442)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Marketing |text|(912, 431)|(982, 444)|13|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Necessary |text|(234, 432)|(310, 444)|12|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+afte |unchecked switch|(128, 441)|(158, 455)|14|Black, (RGB: 0, 0, 0)|Mercury, (RGB: 229, 229, 229)
+Show details > |text|(914, 545)|(1033, 556)|11|White, (RGB: 255, 255, 255)|Curious Blue, (RGB: 55, 129, 203)
+Allow selection |text|(556, 608)|(665, 619)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Allow all |button|(872, 608)|(934, 620)|12|Curious Blue, (RGB: 55, 129, 203)|White, (RGB: 255, 255, 255)
+Deny |text|(300, 609)|(337, 622)|13|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Powered by Cookiebot by Usercentrics |text|(475, 661)|(745, 675)|14|White, (RGB: 255, 255, 255)|Storm Dust, (RGB: 102, 102, 102)
+1K 300 |text|(539, 814)|(611, 823)|10|Steel Gray, (RGB: 36, 36, 48)|Heather, (RGB: 189, 195, 210)
+ULTRAVIEW ... |text|(420, 816)|(504, 826)|10|Seaweed, (RGB: 28, 38, 22)|Oslo Gray, (RGB: 128, 143, 158)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+LAS Rewards |checked radio button|(651, 26)|(724, 35)|9|White, (RGB: 255, 255, 255)|Charade, (RGB: 35, 43, 53)|non-deceptive|not-applicable|Standard radio button option, no deceptive design detected.
+Contact |checked radio button|(874, 26)|(918, 37)|11|White, (RGB: 255, 255, 255)|Mako, (RGB: 69, 75, 84)|non-deceptive|not-applicable|Standard radio button option, no deceptive design detected.
+Gift Cards |checked radio button|(771, 27)|(827, 35)|8|White, (RGB: 255, 255, 255)|Nevada, (RGB: 107, 112, 119)|non-deceptive|not-applicable|Standard radio button option, no deceptive design detected.
+Pro Shop & Academy |checked radio button|(963, 27)|(1083, 40)|12|White, (RGB: 255, 255, 255)|Charade, (RGB: 35, 43, 53)|non-deceptive|not-applicable|Standard radio button option, no deceptive design detected.
+Sign In |button|(1125, 27)|(1165, 37)|10|White, (RGB: 255, 255, 255)|Charade, (RGB: 38, 45, 55)|non-deceptive|not-applicable|Standard sign-in button, no deceptive design detected.
+Lancaster ARCHERY SUPPLY . |text|(91, 80)|(207, 115)|12|White, (RGB: 255, 255, 255)|Black, (RGB: 2, 3, 2)|non-deceptive|not-applicable|Standard website title, no deceptive design detected.
+SHOP BRANDS DEALS BLOG |text|(260, 87)|(538, 98)|10|White, (RGB: 255, 255, 255)|Charade, (RGB: 35, 43, 53)|non-deceptive|not-applicable|Standard navigation text, no deceptive design detected.
+Search |text|(736, 87)|(781, 98)|11|White, (RGB: 255, 255, 255)|Shady Lady, (RGB: 161, 161, 169)|non-deceptive|not-applicable|Standard search bar text, no deceptive design detected.
+LAS Reward Members unlock 10X bonus reward points on select items . * Shop |text|(388, 155)|(834, 166)|11|Confetti, (RGB: 240, 218, 74)|Red Beech, (RGB: 124, 48, 12)|non-deceptive|not-applicable|Standard promotional text, no deceptive design detected.
+This website uses cookies |text|(175, 274)|(371, 286)|12|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Standard cookie banner notice, no deceptive design detected.
+We use cookies to personalize content and ads , provide social media features , and to analyze our traffic . We also share information about your use of our site with our social media , advertising and analytics partners who may combine it with other information that you've provided to them or that they've collected from your use of their services .  F |text|(129, 305)|(1029, 375)|27|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Standard cookie banner notice, no deceptive design detected.
+La ARCH |text|(1134, 343)|(1163, 371)|12|Black, (RGB: 1, 1, 1)|Chicago, (RGB: 88, 83, 80)|non-deceptive|not-applicable|Standard cookie banner notice, no deceptive design detected.
+Ord |text|(128, 414)|(157, 428)|14|Black, (RGB: 0, 0, 0)|Silver, (RGB: 199, 199, 199)|non-deceptive|not-applicable|Standard cookie banner notice, no deceptive design detected.
+Preferences |text|(454, 431)|(540, 442)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|obstruction|pre-selection|Cookie banner option is pre-selected to indicate users to allow extra cookies.
+Statistics |text|(689, 431)|(756, 442)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|obstruction|pre-selection|Cookie banner option is pre-selected to indicate users to allow extra cookies.
+Marketing |text|(912, 431)|(982, 444)|13|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|obstruction|pre-selection|Cookie banner option is pre-selected to indicate users to allow extra cookies.
+Necessary |text|(234, 432)|(310, 444)|12|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Standard cookie banner notice, no deceptive design detected.
+afte |unchecked switch|(128, 441)|(158, 455)|14|Black, (RGB: 0, 0, 0)|Mercury, (RGB: 229, 229, 229)|non-deceptive|not-applicable|Standard cookie banner notice, no deceptive design detected.
+Show details > |text|(914, 545)|(1033, 556)|11|White, (RGB: 255, 255, 255)|Curious Blue, (RGB: 55, 129, 203)|non-deceptive|not-applicable|Standard cookie banner notice, no deceptive design detected.
+Allow selection |text|(556, 608)|(665, 619)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Standard cookie banner notice, no deceptive design detected.
+Allow all |button|(872, 608)|(934, 620)|12|Curious Blue, (RGB: 55, 129, 203)|White, (RGB: 255, 255, 255)|interface-interference|nudge|The button is having different, high-contrast color compare to the other option thus nudging the user to select all cookies.
+Deny |text|(300, 609)|(337, 622)|13|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Standard cookie banner notice, no deceptive design detected.
+Powered by Cookiebot by Usercentrics |text|(475, 661)|(745, 675)|14|White, (RGB: 255, 255, 255)|Storm Dust, (RGB: 102, 102, 102)|non-deceptive|not-applicable|Standard cookie banner notice, no deceptive design detected.
+1K 300 |text|(539, 814)|(611, 823)|10|Steel Gray, (RGB: 36, 36, 48)|Heather, (RGB: 189, 195, 210)|non-deceptive|not-applicable|Standard product description, no deceptive design detected.
+ULTRAVIEW ... |text|(420, 816)|(504, 826)|10|Seaweed, (RGB: 28, 38, 22)|Oslo Gray, (RGB: 128, 143, 158)|non-deceptive|not-applicable|Standard product description, no deceptive design detected.
+
+
+Example 8:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+The  Weather  Channel|text|(14, 28)|(62, 65)|11|White, (RGB: 255, 255, 255)|Orient, (RGB: 0, 89, 134)
+Search City or Zip Code|button|(373, 34)|(540, 49)|14|Jelly Bean, (RGB: 51, 122, 158)|Karry, (RGB: 249, 232, 208)
+GO PREMIUM|text|(972, 40)|(1034, 48)|8|White, (RGB: 255, 255, 255)|Havelock Blue, (RGB: 66, 146, 222)
+41 ° Madison , WI |text|(100, 93)|(203, 110)|14|Jelly Bean, (RGB: 51, 122, 158)|Stark White, (RGB: 236, 209, 189)
+Hourly|button|(337, 134)|(386, 149)|15|Prussian Blue, (RGB: 0, 53, 80)|Santa Fe, (RGB: 173, 127, 85)
+Weekend|button|(553, 134)|(621, 149)|15|Prussian Blue, (RGB: 0, 53, 80)|Maize, (RGB: 247, 214, 164)
+Radar|button|(801, 134)|(843, 148)|14|Prussian Blue, (RGB: 0, 53, 80)|Cornflower, (RGB: 140, 223, 250)
+My Dashboard NEW|button|(30, 135)|(170, 149)|14|Gallery, (RGB: 235, 236, 238)|Black, (RGB: 0, 0, 0)
+10 Day|button|(446, 135)|(494, 149)|12|Prussian Blue, (RGB: 0, 53, 80)|Laser, (RGB: 214, 165, 119)
+Today|button|(234, 136)|(278, 149)|13|Prussian Blue, (RGB: 0, 53, 80)|Maize, (RGB: 247, 214, 164)
+Monthly|button|(680, 136)|(742, 150)|14|Prussian Blue, (RGB: 0, 53, 80)|Anakiwa, (RGB: 156, 236, 244)
+Video|text|(931, 136)|(974, 148)|12|Prussian Blue, (RGB: 0, 53, 80)|Santa Fe, (RGB: 165, 120, 85)
+More Forecasts|text|(1024, 136)|(1134, 149)|12|Prussian Blue, (RGB: 0, 53, 80)|White, (RGB: 255, 255, 255)
+TOM FORD|text|(461, 254)|(490, 259)|5|Rose White, (RGB: 253, 246, 244)|Oriental Pink, (RGB: 195, 149, 155)
+SHOP SAKS.COM ▶|text|(178, 358)|(338, 376)|18|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+A.W.A.K.E. Mode|text|(716, 374)|(785, 386)|11|White, (RGB: 255, 255, 255)|Picton Blue, (RGB: 82, 162, 239)
+Lack of Color|text|(859, 374)|(916, 385)|11|White, (RGB: 255, 255, 255)|Pueblo, (RGB: 123, 44, 8)
+TOM FORD|text|(453, 376)|(498, 385)|9|White, (RGB: 255, 255, 255)|Haiti, (RGB: 24, 8, 41)
+Aidan Mattox|text|(585, 376)|(641, 384)|8|White, (RGB: 255, 255, 255)|Salomie, (RGB: 255, 219, 140)
+Lela Rose|text|(1005, 376)|(1046, 385)|9|White, (RGB: 255, 255, 255)|Ochre, (RGB: 206, 121, 41)
+Advertisement|text|(1080, 475)|(1147, 483)|8|White, (RGB: 255, 255, 255)|Cornflower, (RGB: 157, 207, 251)
+Travel & Outdoors|text|(58, 488)|(229, 503)|15|White, (RGB: 255, 255, 255)|Shark, (RGB: 43, 43, 43)
+Here's Our Guide To Surviving Thanksgiving Travel  5 hours ago  Thanksgiving weekend is one of the busiest travel times of the year . But winter weather|text|(216, 542)|(804, 608)|14|White, (RGB: 255, 255, 255)|Stack, (RGB: 139, 139, 139)
+Your Privacy  See our Privacy Policy to learn about the types of data we collect and how we use and share it . We collect data from your browser to personalize your weather and the ads you see .  Review Privacy and Advertising Settings|text|(266, 719)|(954, 808)|14|White, (RGB: 255, 255, 255)|Shark, (RGB: 43, 43, 43)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+The  Weather  Channel|text|(14, 28)|(62, 65)|11|White, (RGB: 255, 255, 255)|Orient, (RGB: 0, 89, 134)|non-deceptive|not-applicable|Website title
+Search City or Zip Code|button|(373, 34)|(540, 49)|14|Jelly Bean, (RGB: 51, 122, 158)|Karry, (RGB: 249, 232, 208)|non-deceptive|not-applicable|Search bar
+GO PREMIUM|text|(972, 40)|(1034, 48)|8|White, (RGB: 255, 255, 255)|Havelock Blue, (RGB: 66, 146, 222)|non-deceptive|not-applicable|Premium subscription button
+41 ° Madison , WI |text|(100, 93)|(203, 110)|14|Jelly Bean, (RGB: 51, 122, 158)|Stark White, (RGB: 236, 209, 189)|non-deceptive|not-applicable|Weather information
+Hourly|button|(337, 134)|(386, 149)|15|Prussian Blue, (RGB: 0, 53, 80)|Santa Fe, (RGB: 173, 127, 85)|non-deceptive|not-applicable|Navigation button
+Weekend|button|(553, 134)|(621, 149)|15|Prussian Blue, (RGB: 0, 53, 80)|Maize, (RGB: 247, 214, 164)|non-deceptive|not-applicable|Navigation button
+Radar|button|(801, 134)|(843, 148)|14|Prussian Blue, (RGB: 0, 53, 80)|Cornflower, (RGB: 140, 223, 250)|non-deceptive|not-applicable|Navigation button
+My Dashboard NEW|button|(30, 135)|(170, 149)|14|Gallery, (RGB: 235, 236, 238)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Navigation button
+10 Day|button|(446, 135)|(494, 149)|12|Prussian Blue, (RGB: 0, 53, 80)|Laser, (RGB: 214, 165, 119)|non-deceptive|not-applicable|Navigation button
+Today|button|(234, 136)|(278, 149)|13|Prussian Blue, (RGB: 0, 53, 80)|Maize, (RGB: 247, 214, 164)|non-deceptive|not-applicable|Navigation button
+Monthly|button|(680, 136)|(742, 150)|14|Prussian Blue, (RGB: 0, 53, 80)|Anakiwa, (RGB: 156, 236, 244)|non-deceptive|not-applicable|Navigation button
+Video|text|(931, 136)|(974, 148)|12|Prussian Blue, (RGB: 0, 53, 80)|Santa Fe, (RGB: 165, 120, 85)|non-deceptive|not-applicable|Navigation button
+More Forecasts|text|(1024, 136)|(1134, 149)|12|Prussian Blue, (RGB: 0, 53, 80)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Navigation button
+TOM FORD|text|(461, 254)|(490, 259)|5|Rose White, (RGB: 253, 246, 244)|Oriental Pink, (RGB: 195, 149, 155)|sneaking|disguised-ads|Small font size and color similar to background makes it look like content, but it's close to an advertisement.
+SHOP SAKS.COM ▶|text|(178, 358)|(338, 376)|18|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|sneaking|disguised-ads|Large font size and prominent placement suggest it could be disguised as content, but its proximity to other ads suggests it's an ad.
+A.W.A.K.E. Mode|text|(716, 374)|(785, 386)|11|White, (RGB: 255, 255, 255)|Picton Blue, (RGB: 82, 162, 239)|sneaking|disguised-ads|Appears as regular content but is close to an advertisement.
+Lack of Color|text|(859, 374)|(916, 385)|11|White, (RGB: 255, 255, 255)|Pueblo, (RGB: 123, 44, 8)|sneaking|disguised-ads|Appears as regular content but is close to an advertisement.
+TOM FORD|text|(453, 376)|(498, 385)|9|White, (RGB: 255, 255, 255)|Haiti, (RGB: 24, 8, 41)|sneaking|disguised-ads|Appears as regular content but is close to an advertisement.
+Aidan Mattox|text|(585, 376)|(641, 384)|8|White, (RGB: 255, 255, 255)|Salomie, (RGB: 255, 219, 140)|sneaking|disguised-ads|Appears as regular content but is close to an advertisement.
+Lela Rose|text|(1005, 376)|(1046, 385)|9|White, (RGB: 255, 255, 255)|Ochre, (RGB: 206, 121, 41)|sneaking|disguised-ads|Appears as regular content but is close to an advertisement.
+Advertisement|text|(1080, 475)|(1147, 483)|8|White, (RGB: 255, 255, 255)|Cornflower, (RGB: 157, 207, 251)|non-deceptive|not-applicable|Clearly labeled as an advertisement.
+Travel & Outdoors|text|(58, 488)|(229, 503)|15|White, (RGB: 255, 255, 255)|Shark, (RGB: 43, 43, 43)|non-deceptive|not-applicable|News category title
+Here's Our Guide To Surviving Thanksgiving Travel  5 hours ago  Thanksgiving weekend is one of the busiest travel times of the year . But winter weather|text|(216, 542)|(804, 608)|14|White, (RGB: 255, 255, 255)|Stack, (RGB: 139, 139, 139)|non-deceptive|not-applicable|News article snippet
+Your Privacy  See our Privacy Policy to learn about the types of data we collect and how we use and share it . We collect data from your browser to personalize your weather and the ads you see .  Review Privacy and Advertising Settings|text|(266, 719)|(954, 808)|14|White, (RGB: 255, 255, 255)|Shark, (RGB: 43, 43, 43)|forced-action|forced-action|The text implies forced action as continuing to browse is taken as consent as there are no reject button.
+
+
+Example 9:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+Get 40 % off this Black Friday . Offer Ends Soon . |text|(442, 26)|(695, 68)|14|French Lilac, (RGB: 233, 192, 233)|Honey Flower, (RGB: 80, 34, 116)
+Claim Offer |button|(777, 41)|(874, 53)|12|Honey Flower, (RGB: 80, 34, 116)|White, (RGB: 255, 255, 255)
+Sign up free |button|(1049, 180)|(1149, 195)|15|Firefly, (RGB: 30, 35, 48)|White, (RGB: 255, 255, 255)
+Templates Marketplace Discover Pricing Learn |text|(109, 181)|(565, 198)|13|White, (RGB: 255, 255, 255)|Kokoda, (RGB: 103, 107, 95)
+Log in |button|(939, 181)|(989, 195)|14|Gin, (RGB: 239, 240, 236)|Firefly, (RGB: 30, 35, 48)
+Everything you are . In one , simple link in bio . Join 50M + people using Linktree for their link in bio . One link to help you share everything you create , curate and sell from your Instagram , TikTok , Twitter , YouTube and other social media profiles . |text|(44, 331)|(586, 715)|25|Green House, (RGB: 37, 79, 26)|Pear, (RGB: 210, 232, 35)
+Avery Clothing Utilitarian garments for the everyday  Autumn Collection |button|(835, 491)|(977, 543)|8|Cement, (RGB: 140, 118, 96)|Pear, (RGB: 210, 232, 35)
+Latest additions |button|(861, 572)|(928, 579)|7|Pear, (RGB: 210, 232, 35)|Olivetone, (RGB: 114, 126, 19)
+Podcast |button|(872, 610)|(906, 616)|6|Pear, (RGB: 210, 232, 35)|Verdun Green, (RGB: 79, 87, 13)
+$ 30 |text|(756, 707)|(770, 713)|6|White, (RGB: 255, 255, 255)|Oslo Gray, (RGB: 141, 143, 149)
+"This site uses cookies for performance , analytics , and personalisation which helps us to improve our site and provide you with personalised content . You may choose to set "" Cookie Preferences "" to further manage your cookie selections . For more information please see our Privacy Policy & Cookie Notice . "|text|(34, 772)|(706, 827)|13|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Cookie Preferences |text|(842, 787)|(973, 798)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+Get 40 % off this Black Friday . Offer Ends Soon . |text|(442, 26)|(695, 68)|14|French Lilac, (RGB: 233, 192, 233)|Honey Flower, (RGB: 80, 34, 116)|interface-interference|fake-scarcity-fake-urgency|The text 'Offer Ends Soon' creates a sense of urgency to pressure users into claiming the offer.
+Claim Offer |button|(777, 41)|(874, 53)|12|Honey Flower, (RGB: 80, 34, 116)|White, (RGB: 255, 255, 255)|interface-interference|fake-scarcity-fake-urgency|Button is related to 'Offer Ends Soon' claim
+Sign up free |button|(1049, 180)|(1149, 195)|15|Firefly, (RGB: 30, 35, 48)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|This is a standard call to action button.
+Templates Marketplace Discover Pricing Learn |text|(109, 181)|(565, 198)|13|White, (RGB: 255, 255, 255)|Kokoda, (RGB: 103, 107, 95)|non-deceptive|not-applicable|These are standard navigation links.
+Log in |button|(939, 181)|(989, 195)|14|Gin, (RGB: 239, 240, 236)|Firefly, (RGB: 30, 35, 48)|non-deceptive|not-applicable|This is a standard call to action button.
+Everything you are . In one , simple link in bio . Join 50M + people using Linktree for their link in bio . One link to help you share everything you create , curate and sell from your Instagram , TikTok , Twitter , YouTube and other social media profiles . |text|(44, 331)|(586, 715)|25|Green House, (RGB: 37, 79, 26)|Pear, (RGB: 210, 232, 35)|non-deceptive|not-applicable|This text describes the service offered by Linktree.
+Avery Clothing Utilitarian garments for the everyday  Autumn Collection |button|(835, 491)|(977, 543)|8|Cement, (RGB: 140, 118, 96)|Pear, (RGB: 210, 232, 35)|non-deceptive|not-applicable|This appears to be a standard button linking to a clothing collection.
+Latest additions |button|(861, 572)|(928, 579)|7|Pear, (RGB: 210, 232, 35)|Olivetone, (RGB: 114, 126, 19)|non-deceptive|not-applicable|This appears to be a standard button.
+Podcast |button|(872, 610)|(906, 616)|6|Pear, (RGB: 210, 232, 35)|Verdun Green, (RGB: 79, 87, 13)|non-deceptive|not-applicable|This appears to be a standard button.
+$ 30 |text|(756, 707)|(770, 713)|6|White, (RGB: 255, 255, 255)|Oslo Gray, (RGB: 141, 143, 149)|non-deceptive|not-applicable|This appears to be a price tag.
+"This site uses cookies for performance , analytics , and personalisation which helps us to improve our site and provide you with personalised content . You may choose to set "" Cookie Preferences "" to further manage your cookie selections . For more information please see our Privacy Policy & Cookie Notice . "|text|(34, 772)|(706, 827)|13|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|forced-action|forced-action|"While it mentions cookie preferences, it doesn't offer a direct way to reject all cookies.  The user has to go into ""Cookie Preferences"" to manage their choices, implying consent by default."
+Cookie Preferences |text|(842, 787)|(973, 798)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|forced-action|forced-action|This button forces user to interact with additional menu items to Reject Cookies.
+
+
+Example 10:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+TINYURL|text|(48, 25)|(207, 49)|24|White, (RGB: 255, 255, 255)|San Juan, (RGB: 35, 83, 111)
+Sign In|button|(1117, 30)|(1173, 44)|14|Deep Cerulean, (RGB: 8, 125, 168)|French Pass, (RGB: 191, 253, 255)
+?|button|(624, 31)|(637, 45)|14|Bondi Blue, (RGB: 9, 128, 161)|White, (RGB: 255, 255, 255)
+Plans Blog|text|(771, 31)|(880, 46)|12|Deep Cerulean, (RGB: 8, 125, 168)|White, (RGB: 255, 255, 255)
+Features|text|(909, 31)|(979, 43)|12|Blue Whale, (RGB: 0, 35, 66)|White, (RGB: 255, 255, 255)
+Sign Up|text|(1025, 31)|(1090, 46)|15|Deep Cerulean, (RGB: 8, 125, 168)|French Pass, (RGB: 191, 253, 255)
+Deal expires in :|text|(891, 94)|(983, 107)|13|Swamp, (RGB: 4, 19, 30)|White, (RGB: 255, 255, 255)
+%  BLACK FRIDAY|text|(59, 110)|(346, 155)|20|Cod Gray, (RGB: 7, 10, 15)|Bondi Blue, (RGB: 9, 128, 161)
+40 % OFF the first year - click now to join  the club .|text|(451, 125)|(856, 168)|16|Cod Gray, (RGB: 7, 10, 15)|Bondi Blue, (RGB: 9, 128, 161)
+53|text|(1052, 136)|(1084, 153)|17|White, (RGB: 255, 255, 255)|Shark, (RGB: 33, 37, 41)
+4|button|(910, 137)|(931, 154)|17|White, (RGB: 255, 255, 255)|Shark, (RGB: 33, 37, 41)
+13|text|(980, 137)|(1007, 152)|15|White, (RGB: 255, 255, 255)|Shark, (RGB: 33, 37, 41)
+46|text|(1124, 137)|(1160, 154)|17|White, (RGB: 255, 255, 255)|Shark, (RGB: 33, 37, 41)
+DAYS|text|(907, 182)|(934, 195)|13|Black Pearl, (RGB: 7, 27, 38)|Calypso, (RGB: 61, 113, 141)
+MINUTES|text|(1045, 183)|(1091, 191)|8|Black Pearl, (RGB: 5, 26, 39)|Spring Leaves, (RGB: 95, 135, 120)
+SECONDS|text|(1116, 183)|(1168, 192)|9|Firefly, (RGB: 9, 39, 55)|Limed Ash, (RGB: 122, 125, 101)
+HOURS|text|(976, 184)|(1013, 192)|8|Black Pearl, (RGB: 7, 30, 42)|Viridian Green, (RGB: 96, 135, 120)
+Unicyclist.com - The Unicyclist Community|text|(709, 276)|(1016, 289)|13|White, (RGB: 255, 255, 255)|Black, (RGB: 5, 5, 5)
+Features  Branded & Customized Links Build your perfect branded link campaign with custom domain essentials .|text|(55, 282)|(569, 447)|16|White, (RGB: 255, 255, 255)|Shark, (RGB: 33, 37, 41)
+"Best recent quote heard on the trail : "" He can ride a one wheel ! "" -- from a very small child in a stroller  More quotes at https://unicycle.to/BestQuotes"|text|(660, 324)|(1098, 383)|12|White, (RGB: 255, 255, 255)|Black, (RGB: 5, 5, 5)
+UNICYCLIST.COM  Quote of the day ( from non - riders ) Always best to take it as a compliment . With younger kids , it could even have been intended as one|text|(800, 421)|(1123, 512)|11|Concrete, (RGB: 240, 242, 245)|Storm Dust, (RGB: 101, 103, 107)
+Get Started|button|(86, 498)|(180, 511)|13|Bondi Blue, (RGB: 9, 128, 161)|White, (RGB: 255, 255, 255)
+Like|text|(728, 556)|(759, 568)|12|White, (RGB: 255, 255, 255)|Storm Dust, (RGB: 101, 103, 107)
+Share|text|(1001, 556)|(1042, 567)|11|White, (RGB: 255, 255, 255)|Storm Dust, (RGB: 101, 103, 107)
+Comment|text|(849, 557)|(919, 567)|10|White, (RGB: 255, 255, 255)|Storm Dust, (RGB: 101, 103, 107)
+Cookie Consent  We use cookies to personalize and improve your experience on our site and to serve you with relevant advertising . For more information , click ' Learn More ' to check our data collection practices .|text|(725, 623)|(1172, 727)|12|White, (RGB: 255, 255, 255)|Tuna, (RGB: 52, 58, 64)
+B|text|(687, 718)|(700, 732)|14|White, (RGB: 255, 255, 255)|White, (RGB: 255, 255, 255)
+Links that fit your personality . Create branded and custom links that your customers or users Copyright © TinyURL LLC ⚫ Terms Privacy Policy Accessibility .|text|(14, 745)|(563, 836)|18|White, (RGB: 255, 255, 255)|Blue Whale, (RGB: 0, 35, 66)
+Learn More Accept|button|(1016, 755)|(1172, 769)|12|White, (RGB: 255, 255, 255)|Deep Cerulean, (RGB: 8, 125, 168)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+TINYURL|text|(48, 25)|(207, 49)|24|White, (RGB: 255, 255, 255)|San Juan, (RGB: 35, 83, 111)|non-deceptive|not-applicable|Website name and appears to be non-deceptive.
+Sign In|button|(1117, 30)|(1173, 44)|14|Deep Cerulean, (RGB: 8, 125, 168)|French Pass, (RGB: 191, 253, 255)|non-deceptive|not-applicable|Standard sign-in button.
+?|button|(624, 31)|(637, 45)|14|Bondi Blue, (RGB: 9, 128, 161)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Likely a help or information button.
+Plans Blog|text|(771, 31)|(880, 46)|12|Deep Cerulean, (RGB: 8, 125, 168)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Navigation link, non-deceptive.
+Features|text|(909, 31)|(979, 43)|12|Blue Whale, (RGB: 0, 35, 66)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Navigation link, non-deceptive.
+Sign Up|text|(1025, 31)|(1090, 46)|15|Deep Cerulean, (RGB: 8, 125, 168)|French Pass, (RGB: 191, 253, 255)|non-deceptive|not-applicable|Standard sign-up option.
+Deal expires in :|text|(891, 94)|(983, 107)|13|Swamp, (RGB: 4, 19, 30)|White, (RGB: 255, 255, 255)|interface-interference|fake-scarcity-fake-urgency|Creates a sense of urgency, potentially deceptive.
+%  BLACK FRIDAY|text|(59, 110)|(346, 155)|20|Cod Gray, (RGB: 7, 10, 15)|Bondi Blue, (RGB: 9, 128, 161)|non-deceptive|not-applicable|Black Friday deal information.
+40 % OFF the first year - click now to join  the club .|text|(451, 125)|(856, 168)|16|Cod Gray, (RGB: 7, 10, 15)|Bondi Blue, (RGB: 9, 128, 161)|interface-interference|fake-scarcity-fake-urgency|'Click now' and large discount create urgency and could be misleading.
+53|text|(1052, 136)|(1084, 153)|17|White, (RGB: 255, 255, 255)|Shark, (RGB: 33, 37, 41)|interface-interference|fake-scarcity-fake-urgency|Part of the countdown timer, contributes to urgency.
+4|button|(910, 137)|(931, 154)|17|White, (RGB: 255, 255, 255)|Shark, (RGB: 33, 37, 41)|interface-interference|fake-scarcity-fake-urgency|Part of the countdown timer, contributes to urgency.
+13|text|(980, 137)|(1007, 152)|15|White, (RGB: 255, 255, 255)|Shark, (RGB: 33, 37, 41)|interface-interference|fake-scarcity-fake-urgency|Part of the countdown timer, contributes to urgency.
+46|text|(1124, 137)|(1160, 154)|17|White, (RGB: 255, 255, 255)|Shark, (RGB: 33, 37, 41)|interface-interference|fake-scarcity-fake-urgency|Part of the countdown timer, contributes to urgency.
+DAYS|text|(907, 182)|(934, 195)|13|Black Pearl, (RGB: 7, 27, 38)|Calypso, (RGB: 61, 113, 141)|interface-interference|fake-scarcity-fake-urgency|Part of the countdown timer, contributes to urgency.
+MINUTES|text|(1045, 183)|(1091, 191)|8|Black Pearl, (RGB: 5, 26, 39)|Spring Leaves, (RGB: 95, 135, 120)|interface-interference|fake-scarcity-fake-urgency|Part of the countdown timer, contributes to urgency.
+SECONDS|text|(1116, 183)|(1168, 192)|9|Firefly, (RGB: 9, 39, 55)|Limed Ash, (RGB: 122, 125, 101)|interface-interference|fake-scarcity-fake-urgency|Part of the countdown timer, contributes to urgency.
+HOURS|text|(976, 184)|(1013, 192)|8|Black Pearl, (RGB: 7, 30, 42)|Viridian Green, (RGB: 96, 135, 120)|interface-interference|fake-scarcity-fake-urgency|Part of the countdown timer, contributes to urgency.
+Unicyclist.com - The Unicyclist Community|text|(709, 276)|(1016, 289)|13|White, (RGB: 255, 255, 255)|Black, (RGB: 5, 5, 5)|non-deceptive|not-applicable|Website description.
+Features  Branded & Customized Links Build your perfect branded link campaign with custom domain essentials .|text|(55, 282)|(569, 447)|16|White, (RGB: 255, 255, 255)|Shark, (RGB: 33, 37, 41)|non-deceptive|not-applicable|Describes features, non-deceptive.
+"Best recent quote heard on the trail : "" He can ride a one wheel ! "" -- from a very small child in a stroller  More quotes at https://unicycle.to/BestQuotes"|text|(660, 324)|(1098, 383)|12|White, (RGB: 255, 255, 255)|Black, (RGB: 5, 5, 5)|non-deceptive|not-applicable|A quote and a link, seems non-deceptive.
+UNICYCLIST.COM  Quote of the day ( from non - riders ) Always best to take it as a compliment . With younger kids , it could even have been intended as one|text|(800, 421)|(1123, 512)|11|Concrete, (RGB: 240, 242, 245)|Storm Dust, (RGB: 101, 103, 107)|non-deceptive|not-applicable|Another quote, non-deceptive.
+Get Started|button|(86, 498)|(180, 511)|13|Bondi Blue, (RGB: 9, 128, 161)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Call to action button, non-deceptive.
+Like|text|(728, 556)|(759, 568)|12|White, (RGB: 255, 255, 255)|Storm Dust, (RGB: 101, 103, 107)|non-deceptive|not-applicable|Social media interaction, non-deceptive.
+Share|text|(1001, 556)|(1042, 567)|11|White, (RGB: 255, 255, 255)|Storm Dust, (RGB: 101, 103, 107)|non-deceptive|not-applicable|Social media interaction, non-deceptive.
+Comment|text|(849, 557)|(919, 567)|10|White, (RGB: 255, 255, 255)|Storm Dust, (RGB: 101, 103, 107)|non-deceptive|not-applicable|Social media interaction, non-deceptive.
+Cookie Consent  We use cookies to personalize and improve your experience on our site and to serve you with relevant advertising . For more information , click ' Learn More ' to check our data collection practices .|text|(725, 623)|(1172, 727)|12|White, (RGB: 255, 255, 255)|Tuna, (RGB: 52, 58, 64)|non-deceptive|not-applicable|Standard cookie consent information.
+B|text|(687, 718)|(700, 732)|14|White, (RGB: 255, 255, 255)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Unclear purpose, but likely non-deceptive.
+Links that fit your personality . Create branded and custom links that your customers or users Copyright © TinyURL LLC ⚫ Terms Privacy Policy Accessibility .|text|(14, 745)|(563, 836)|18|White, (RGB: 255, 255, 255)|Blue Whale, (RGB: 0, 35, 66)|non-deceptive|not-applicable|Website description and legal information.
+Learn More Accept|button|(1016, 755)|(1172, 769)|12|White, (RGB: 255, 255, 255)|Deep Cerulean, (RGB: 8, 125, 168)|forced-action|forced-action|'Learn More' is presented as a button alongside 'Accept', but only 'Accept' acts as a button.  No way to reject cookies is given on this page.
+
+
+Example 11:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+Lenovo Pro Business Store |text|(829, 14)|(992, 24)|10|Gallery, (RGB: 237, 237, 237)|Black, (RGB: 0, 0, 0)
+1-855-253-6686 |text|(1100, 14)|(1203, 24)|10|Gallery, (RGB: 237, 237, 237)|Black, (RGB: 0, 0, 0)
+Sign In / Create Account |text|(949, 62)|(1043, 98)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+Lenovo |button|(25, 69)|(127, 90)|21|Scarlet, (RGB: 225, 37, 27)|White, (RGB: 255, 255, 255)
+Q |text|(859, 71)|(880, 90)|19|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 0, 0, 0)
+All What are you looking for today ? |text|(196, 74)|(484, 88)|14|Wild Sand, (RGB: 245, 245, 245)|Dove Gray, (RGB: 111, 109, 110)
+Business Student Gaming |text|(950, 125)|(1206, 139)|14|White, (RGB: 255, 255, 255)|Hunter Green, (RGB: 23, 23, 23)
+Black Friday |text|(477, 126)|(562, 141)|14|White, (RGB: 255, 255, 255)|Gravel, (RGB: 78, 68, 78)
+Products Solutions Services Support About Lenovo |text|(16, 127)|(452, 142)|11|White, (RGB: 255, 255, 255)|Gravel, (RGB: 78, 68, 78)
+Lenovo Tech World 24 |text|(88, 294)|(372, 362)|30|Revolver, (RGB: 34, 18, 54)|White, (RGB: 255, 255, 255)
+OCTOBER 15 , 2024  Lenovo's Yuanqing Yang & Al Visionaries Discuss Future Innovations |text|(90, 387)|(626, 483)|20|Black Rock, (RGB: 19, 12, 45)|White, (RGB: 255, 255, 255)
+Learn More |button|(115, 539)|(198, 550)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)
+"We use cookies and similar technologies to personalize content and ads and analyze our traffic . By browsing our site or by selecting "" X "" , you agree to our use of cookies and our sharing of information with our partners . View the Lenovo Website Privacy Statement . Visit our Cookie Consent Tool to manage your preferences . Click Here to Reject All non - essential cookies . "|text|(74, 755)|(1148, 788)|13|Athens Gray, (RGB: 234, 238, 245)|Black, (RGB: 0, 0, 0)
+Need Help ? Call : 1-855-253-6686 |text|(847, 811)|(1055, 822)|11|Gallery, (RGB: 239, 239, 239)|Venice Blue, (RGB: 13, 92, 145)
+Chat Now |button|(1118, 811)|(1189, 825)|13|St Tropaz, (RGB: 41, 78, 149)|White, (RGB: 255, 255, 255)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+Lenovo Pro Business Store|text|(829, 14)|(992, 24)|10|Gallery, (RGB: 237, 237, 237)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|This text appears to be a simple heading for a section of the website.
+1-855-253-6686|text|(1100, 14)|(1203, 24)|10|Gallery, (RGB: 237, 237, 237)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|This is a phone number provided for customer support.
+Sign In / Create Account|text|(949, 62)|(1043, 98)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Standard account management options.
+Lenovo|button|(25, 69)|(127, 90)|21|Scarlet, (RGB: 225, 37, 27)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|This appears to be the main logo/home button, a standard website element.
+Q|text|(859, 71)|(880, 90)|19|Wild Sand, (RGB: 245, 245, 245)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Likely a search icon or button.
+All What are you looking for today ?|text|(196, 74)|(484, 88)|14|Wild Sand, (RGB: 245, 245, 245)|Dove Gray, (RGB: 111, 109, 110)|non-deceptive|not-applicable|Standard search bar placeholder text.
+Business Student Gaming|text|(950, 125)|(1206, 139)|14|White, (RGB: 255, 255, 255)|Hunter Green, (RGB: 23, 23, 23)|non-deceptive|not-applicable|These are likely category links for different user segments.
+Black Friday|text|(477, 126)|(562, 141)|14|White, (RGB: 255, 255, 255)|Gravel, (RGB: 78, 68, 78)|non-deceptive|not-applicable|This is a promotional link for Black Friday deals.
+Products Solutions Services Support About Lenovo|text|(16, 127)|(452, 142)|11|White, (RGB: 255, 255, 255)|Gravel, (RGB: 78, 68, 78)|non-deceptive|not-applicable|Standard website navigation links.
+Lenovo Tech World 24|text|(88, 294)|(372, 362)|30|Revolver, (RGB: 34, 18, 54)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|This appears to be an event announcement.
+OCTOBER 15 , 2024  Lenovo's Yuanqing Yang & Al Visionaries Discuss Future Innovations |text|(90, 387)|(626, 483)|20|Black Rock, (RGB: 19, 12, 45)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Provides further details about the event.
+Learn More|button|(115, 539)|(198, 550)|11|White, (RGB: 255, 255, 255)|Black, (RGB: 0, 0, 0)|non-deceptive|not-applicable|Standard call to action button.
+"We use cookies and similar technologies to personalize content and ads and analyze our traffic . By browsing our site or by selecting "" X "" , you agree to our use of cookies and our sharing of information with our partners . View the Lenovo Website Privacy Statement . Visit our Cookie Consent Tool to manage your preferences . Click Here to Reject All non - essential cookies . "|text|(74, 755)|(1148, 788)|13|Athens Gray, (RGB: 234, 238, 245)|Black, (RGB: 0, 0, 0)|forced-action|forced-action|The user is informed that by browsing or selecting 'X', they agree to the use of cookies.  While options to manage preferences and reject non-essential cookies are provided, continued site usage implies consent, constituting a forced action.
+Need Help ? Call : 1-855-253-6686|text|(847, 811)|(1055, 822)|11|Gallery, (RGB: 239, 239, 239)|Venice Blue, (RGB: 13, 92, 145)|non-deceptive|not-applicable|Provides contact information for support.
+Chat Now|button|(1118, 811)|(1189, 825)|13|St Tropaz, (RGB: 41, 78, 149)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Provides a chat option for support.
+
+
+Example 12:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+SUPPORT|text|(1063, 20)|(1108, 29)|9|Black Haze, (RGB: 246, 246, 246)|Cornflower, (RGB: 153, 198, 242)
+DISCOVER DOMAIN NAMES|text|(430, 92)|(608, 102)|10|White, (RGB: 255, 255, 255)|Seagull, (RGB: 130, 200, 255)
+CHANNEL RESOURCES|text|(711, 92)|(856, 102)|10|White, (RGB: 255, 255, 255)|Mine Shaft, (RGB: 51, 51, 51)
+ABOUT VERISIGN|text|(992, 92)|(1104, 102)|10|White, (RGB: 255, 255, 255)|Raw Sienna, (RGB: 196, 125, 64)
+VERISIGN|text|(53, 100)|(174, 116)|16|White, (RGB: 255, 255, 255)|Storm Dust, (RGB: 102, 102, 102)
+VERISIGN AS A DOMAIN REGISTRY|text|(312, 159)|(472, 169)|10|Slate Gray, (RGB: 119, 135, 151)|Athens Gray, (RGB: 237, 238, 242)
+HOME|button|(70, 160)|(100, 169)|9|Shuttle Gray, (RGB: 88, 105, 124)|Cararra, (RGB: 234, 232, 234)
+DOMAIN NAMES|button|(168, 160)|(246, 171)|10|Slate Gray, (RGB: 115, 132, 149)|Gallery, (RGB: 232, 236, 238)
+DOMAIN NAMES|text|(541, 233)|(680, 246)|13|Deep Sapphire, (RGB: 13, 44, 106)|Link Water, (RGB: 209, 224, 235)
+Verisign as a Domain Registry Powers the domain names that define the internet|text|(333, 272)|(886, 346)|21|St Tropaz, (RGB: 39, 92, 156)|Gull Gray, (RGB: 155, 171, 183)
+Verisign operates the authoritative registry of .com , .net , .name and .cc domain names , and offers domain registry services for a range of additional domain names , including Local Language Domain Names and new generic top - level domains ( TLDs ) .|text|(141, 474)|(1071, 514)|16|White, (RGB: 255, 255, 255)|Deluge, (RGB: 108, 117, 162)
+net com|text|(387, 591)|(699, 619)|37|White, (RGB: 255, 255, 255)|Allports, (RGB: 2, 98, 166)
+"Our websites use different types of cookies . We use Strictly Necessary cookies in order for our websites to function properly and these cookies may never be disabled . We use optional first party and third - party cookies to improve our websites , customize your experience and provide personalized advertising . If you access our websites , optional Analytic cookies , in addition to Strictly Necessary cookies , are enabled and all other optional cookies are disabled ( "" Default Cookie Settings "" ) . Click the "" X "" on the right - hand side of this message to save the Default Cookie Settings and close this banner . Select "" Accept All Cookies "" to save the Default Cookie Settings , enable all other optional cookies and close this banner . Select "" Cookie Settings "" to customize your optional cookie settings or to change previous selections before continuing . For more information , read our Privacy Policy"|text|(31, 653)|(728, 801)|13|Nandor, (RGB: 70, 84, 93)|Cararra, (RGB: 233, 234, 235)
+Cookies Settings|button|(779, 726)|(884, 740)|13|Lochmara, (RGB: 0, 124, 208)|White, (RGB: 255, 255, 255)
+Accept All Cookies|button|(922, 727)|(1038, 738)|12|Lochmara, (RGB: 0, 124, 208)|White, (RGB: 255, 255, 255)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+SUPPORT|text|(1063, 20)|(1108, 29)|9|Black Haze, (RGB: 246, 246, 246)|Cornflower, (RGB: 153, 198, 242)|non-deceptive|not-applicable|Standard support link.
+DISCOVER DOMAIN NAMES|text|(430, 92)|(608, 102)|10|White, (RGB: 255, 255, 255)|Seagull, (RGB: 130, 200, 255)|non-deceptive|not-applicable|Standard navigation link.
+CHANNEL RESOURCES|text|(711, 92)|(856, 102)|10|White, (RGB: 255, 255, 255)|Mine Shaft, (RGB: 51, 51, 51)|non-deceptive|not-applicable|Standard navigation link.
+ABOUT VERISIGN|text|(992, 92)|(1104, 102)|10|White, (RGB: 255, 255, 255)|Raw Sienna, (RGB: 196, 125, 64)|non-deceptive|not-applicable|Standard navigation link.
+VERISIGN|text|(53, 100)|(174, 116)|16|White, (RGB: 255, 255, 255)|Storm Dust, (RGB: 102, 102, 102)|non-deceptive|not-applicable|Website logo, standard practice.
+VERISIGN AS A DOMAIN REGISTRY|text|(312, 159)|(472, 169)|10|Slate Gray, (RGB: 119, 135, 151)|Athens Gray, (RGB: 237, 238, 242)|non-deceptive|not-applicable|Page title, standard practice.
+HOME|button|(70, 160)|(100, 169)|9|Shuttle Gray, (RGB: 88, 105, 124)|Cararra, (RGB: 234, 232, 234)|non-deceptive|not-applicable|Standard home link.
+DOMAIN NAMES|button|(168, 160)|(246, 171)|10|Slate Gray, (RGB: 115, 132, 149)|Gallery, (RGB: 232, 236, 238)|non-deceptive|not-applicable|Standard navigation button.
+DOMAIN NAMES|text|(541, 233)|(680, 246)|13|Deep Sapphire, (RGB: 13, 44, 106)|Link Water, (RGB: 209, 224, 235)|non-deceptive|not-applicable|Section heading, standard practice.
+Verisign as a Domain Registry Powers the domain names that define the internet|text|(333, 272)|(886, 346)|21|St Tropaz, (RGB: 39, 92, 156)|Gull Gray, (RGB: 155, 171, 183)|non-deceptive|not-applicable|Descriptive text, standard practice.
+Verisign operates the authoritative registry of .com , .net , .name and .cc domain names , and offers domain registry services for a range of additional domain names , including Local Language Domain Names and new generic top - level domains ( TLDs ) .|text|(141, 474)|(1071, 514)|16|White, (RGB: 255, 255, 255)|Deluge, (RGB: 108, 117, 162)|non-deceptive|not-applicable|Informative text about the company, standard practice.
+net com|text|(387, 591)|(699, 619)|37|White, (RGB: 255, 255, 255)|Allports, (RGB: 2, 98, 166)|non-deceptive|not-applicable|Highlights of domain names, standard practice.
+"Our websites use different types of cookies . We use Strictly Necessary cookies in order for our websites to function properly and these cookies may never be disabled . We use optional first party and third - party cookies to improve our websites , customize your experience and provide personalized advertising . If you access our websites , optional Analytic cookies , in addition to Strictly Necessary cookies , are enabled and all other optional cookies are disabled ( "" Default Cookie Settings "" ) . Click the "" X "" on the right - hand side of this message to save the Default Cookie Settings and close this banner . Select "" Accept All Cookies "" to save the Default Cookie Settings , enable all other optional cookies and close this banner . Select "" Cookie Settings "" to customize your optional cookie settings or to change previous selections before continuing . For more information , read our Privacy Policy"|text|(31, 653)|(728, 801)|13|Nandor, (RGB: 70, 84, 93)|Cararra, (RGB: 233, 234, 235)|forced-action|forced-action|While the text explains different cookie settings, it mentions that by accessing the website, analytic cookies are enabled by default.  There's no mention of an option to reject all cookies directly within this text. Although 'Cookie Settings' allows customization, the default action of enabling analytic cookies upon website access constitutes forced action.
+Cookies Settings|button|(779, 726)|(884, 740)|13|Lochmara, (RGB: 0, 124, 208)|White, (RGB: 255, 255, 255)|forced-action|forced-action|"Only ""Accept"" is present without other options like ""Reject"" nearby. Although ""Cookie Settings"" is present, it is not an alternative to accept or reject."
+Accept All Cookies|button|(922, 727)|(1038, 738)|12|Lochmara, (RGB: 0, 124, 208)|White, (RGB: 255, 255, 255)|forced-action|forced-action|"Only ""Accept"" is present without other options like ""Reject"" nearby. Although ""Cookie Settings"" is present, it is not an alternative to accept or reject."
+
+
+Example 13:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+$ 100 + |text|(916, 9)|(952, 19)|10|Revolver, (RGB: 59, 24, 38)|Revolver, (RGB: 59, 24, 38)
+30 % |text|(281, 10)|(306, 20)|9|Revolver, (RGB: 59, 24, 38)|Revolver, (RGB: 59, 24, 38)
+MARLEYLILLY kids |text|(73, 74)|(165, 87)|13|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+Q SEARCH |button|(957, 77)|(1039, 90)|13|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+MARLEYLILLY |text|(558, 101)|(707, 126)|25|Twilight, (RGB: 228, 204, 221)|Deep Blush, (RGB: 236, 98, 156)
+COLLEGIATE |text|(1069, 136)|(1151, 147)|11|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+MEGA CLEARANCE SALE |text|(20, 137)|(184, 147)|10|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+WHAT'S NEW |text|(216, 137)|(307, 147)|10|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+KIDS |text|(934, 137)|(965, 146)|9|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+GIFTS |text|(999, 137)|(1036, 147)|10|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+SALE |text|(1183, 137)|(1215, 146)|9|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+FEELING LUCKY ? |text|(484, 177)|(738, 198)|21|Snuff, (RGB: 239, 208, 226)|Mine Shaft, (RGB: 51, 51, 51)
+Shop / Shoes / Monogrammed Duck Boots |text|(75, 182)|(293, 195)|11|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+EXTRA 30 % |text|(116, 218)|(307, 241)|23|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+DE : MEGA30 |text|(910, 218)|(1110, 241)|23|Tundora, (RGB: 64, 64, 64)|Tuft Bush, (RGB: 247, 215, 206)
+Spin for a chance to win up to 10 %  off ! |text|(358, 232)|(864, 292)|26|Snuff, (RGB: 239, 208, 226)|Mine Shaft, (RGB: 51, 51, 51)
+Try again ! |text|(591, 391)|(613, 514)|-41|Feijoa, (RGB: 160, 204, 131)|Mine Shaft, (RGB: 51, 51, 51)
+with afterpay® |text|(914, 414)|(1045, 432)|17|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+FREE GIFT |text|(671, 448)|(761, 532)|-34|Azalea, (RGB: 244, 207, 218)|Mine Shaft, (RGB: 51, 51, 51)
+10 % OFF |text|(458, 459)|(513, 547)|-37|Carissma, (RGB: 230, 138, 180)|Mine Shaft, (RGB: 51, 51, 51)
+10 % OFF |text|(735, 591)|(839, 594)|11|Carissma, (RGB: 230, 138, 180)|Mine Shaft, (RGB: 51, 51, 51)
+SPIN |text|(562, 620)|(656, 651)|31|Deep Blush, (RGB: 235, 97, 154)|White, (RGB: 255, 255, 255)
+Adult Sizes |button|(952, 637)|(1014, 648)|10|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+Try again ! |text|(723, 678)|(817, 756)|39|Feijoa, (RGB: 160, 204, 131)|Mine Shaft, (RGB: 51, 51, 51)
+Runs Big , Order Down if Between Sizes |text|(954, 683)|(1162, 694)|11|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+8 |button|(931, 730)|(942, 740)|10|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+9 |button|(1021, 730)|(1032, 740)|10|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+10 |text|(1112, 730)|(1127, 739)|9|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)
+FREE GIFT |text|(666, 738)|(693, 860)|61|Azalea, (RGB: 244, 207, 218)|Mine Shaft, (RGB: 51, 51, 51)
+10 % OFF |text|(532, 761)|(583, 851)|25|Carissma, (RGB: 230, 138, 180)|Mine Shaft, (RGB: 51, 51, 51)
+SONALIZE |text|(914, 882)|(998, 892)|10|Deep Forest Green, (RGB: 22, 33, 14)|Deep Forest Green, (RGB: 22, 33, 14)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+$ 100 + |text|(916, 9)|(952, 19)|10|Revolver, (RGB: 59, 24, 38)|Revolver, (RGB: 59, 24, 38)|non-deceptive|not-applicable|Standard promotional text, no deceptive design detected.
+30 % |text|(281, 10)|(306, 20)|9|Revolver, (RGB: 59, 24, 38)|Revolver, (RGB: 59, 24, 38)|non-deceptive|not-applicable|Standard promotional text, no deceptive design detected.
+MARLEYLILLY kids |text|(73, 74)|(165, 87)|13|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard brand name and product category, no deceptive design detected.
+Q SEARCH |button|(957, 77)|(1039, 90)|13|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard search button, no deceptive design detected.
+MARLEYLILLY |text|(558, 101)|(707, 126)|25|Twilight, (RGB: 228, 204, 221)|Deep Blush, (RGB: 236, 98, 156)|non-deceptive|not-applicable|Standard brand name, no deceptive design detected.
+COLLEGIATE |text|(1069, 136)|(1151, 147)|11|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard product category, no deceptive design detected.
+MEGA CLEARANCE SALE |text|(20, 137)|(184, 147)|10|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard promotional text, no deceptive design detected.
+WHAT'S NEW |text|(216, 137)|(307, 147)|10|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard navigation text, no deceptive design detected.
+KIDS |text|(934, 137)|(965, 146)|9|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard product category, no deceptive design detected.
+GIFTS |text|(999, 137)|(1036, 147)|10|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard product category, no deceptive design detected.
+SALE |text|(1183, 137)|(1215, 146)|9|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard product category, no deceptive design detected.
+FEELING LUCKY ? |text|(484, 177)|(738, 198)|21|Snuff, (RGB: 239, 208, 226)|Mine Shaft, (RGB: 51, 51, 51)|interface-interference|nudge|The question is designed to encourage users to participate in the spin-to-win promotion.
+Shop / Shoes / Monogrammed Duck Boots |text|(75, 182)|(293, 195)|11|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard product category navigation, no deceptive design detected.
+EXTRA 30 % |text|(116, 218)|(307, 241)|23|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard promotional text, no deceptive design detected.
+DE : MEGA30 |text|(910, 218)|(1110, 241)|23|Tundora, (RGB: 64, 64, 64)|Tuft Bush, (RGB: 247, 215, 206)|non-deceptive|not-applicable|Standard promotional code, no deceptive design detected.
+Spin for a chance to win up to 10 %  off ! |text|(358, 232)|(864, 292)|26|Snuff, (RGB: 239, 208, 226)|Mine Shaft, (RGB: 51, 51, 51)|interface-interference|nudge|The text is designed to encourage users to participate in the spin-to-win promotion.
+Try again ! |text|(591, 391)|(613, 514)|-41|Feijoa, (RGB: 160, 204, 131)|Mine Shaft, (RGB: 51, 51, 51)|non-deceptive|not-applicable|Standard feedback message, no deceptive design detected.
+with afterpay® |text|(914, 414)|(1045, 432)|17|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard payment option, no deceptive design detected.
+FREE GIFT |text|(671, 448)|(761, 532)|-34|Azalea, (RGB: 244, 207, 218)|Mine Shaft, (RGB: 51, 51, 51)|sneaking|hidden-costs|The text is small and difficult to read, which could lead users to miss the information about a potential hidden cost.
+10 % OFF |text|(458, 459)|(513, 547)|-37|Carissma, (RGB: 230, 138, 180)|Mine Shaft, (RGB: 51, 51, 51)|sneaking|hidden-costs|The text is small and difficult to read, which could lead users to miss the information about a potential hidden cost.
+10 % OFF |text|(735, 591)|(839, 594)|11|Carissma, (RGB: 230, 138, 180)|Mine Shaft, (RGB: 51, 51, 51)|sneaking|hidden-costs|The text is small and difficult to read, which could lead users to miss the information about a potential hidden cost.
+SPIN |text|(562, 620)|(656, 651)|31|Deep Blush, (RGB: 235, 97, 154)|White, (RGB: 255, 255, 255)|non-deceptive|not-applicable|Standard button text, no deceptive design detected.
+Adult Sizes |button|(952, 637)|(1014, 648)|10|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard button text, no deceptive design detected.
+Try again ! |text|(723, 678)|(817, 756)|39|Feijoa, (RGB: 160, 204, 131)|Mine Shaft, (RGB: 51, 51, 51)|non-deceptive|not-applicable|Standard feedback message, no deceptive design detected.
+Runs Big , Order Down if Between Sizes |text|(954, 683)|(1162, 694)|11|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard sizing information, no deceptive design detected.
+8 |button|(931, 730)|(942, 740)|10|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard size selection button, no deceptive design detected.
+9 |button|(1021, 730)|(1032, 740)|10|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard size selection button, no deceptive design detected.
+10 |text|(1112, 730)|(1127, 739)|9|Tundora, (RGB: 64, 64, 64)|Tundora, (RGB: 64, 64, 64)|non-deceptive|not-applicable|Standard size selection text, no deceptive design detected.
+FREE GIFT |text|(666, 738)|(693, 860)|61|Azalea, (RGB: 244, 207, 218)|Mine Shaft, (RGB: 51, 51, 51)|sneaking|hidden-costs|The text is large and prominent, but it is not clear what the free gift is or how to claim it. This could be misleading.
+10 % OFF |text|(532, 761)|(583, 851)|25|Carissma, (RGB: 230, 138, 180)|Mine Shaft, (RGB: 51, 51, 51)|sneaking|hidden-costs|The text is large and prominent, but it is not clear what the discount is off of. This could be misleading.
+SONALIZE |text|(914, 882)|(998, 892)|10|Deep Forest Green, (RGB: 22, 33, 14)|Deep Forest Green, (RGB: 22, 33, 14)|non-deceptive|not-applicable|Standard button text, no deceptive design detected.
+
+
+Example 14:
+
+Input:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color
+IBM |text|(33, 13)|(89, 34)|21|White, (RGB: 255, 255, 255)|Chicago, (RGB: 80, 80, 80)
+Blog Publications |text|(412, 16)|(569, 33)|15|White, (RGB: 255, 255, 255)|Chicago, (RGB: 82, 82, 82)
+Focus areas |button|(263, 17)|(349, 32)|14|White, (RGB: 255, 255, 255)|Chicago, (RGB: 82, 82, 82)
+Research |text|(161, 18)|(226, 30)|12|White, (RGB: 255, 255, 255)|Copper Canyon, (RGB: 127, 55, 29)
+Careers |button|(605, 18)|(661, 30)|12|White, (RGB: 255, 255, 255)|Cornflower Blue, (RGB: 127, 186, 244)
+About ✓ |button|(696, 18)|(764, 30)|12|White, (RGB: 255, 255, 255)|Twine, (RGB: 199, 142, 87)
+Home ↳ Blog |text|(32, 82)|(77, 116)|13|White, (RGB: 255, 255, 255)|Chicago, (RGB: 88, 91, 93)
+Categories |text|(31, 202)|(101, 214)|12|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 18, 22, 25)
+News |text|(41, 241)|(72, 251)|10|White, (RGB: 255, 255, 255)|Charade, (RGB: 43, 47, 49)
+Research |text|(41, 276)|(94, 285)|9|White, (RGB: 255, 255, 255)|Stack, (RGB: 140, 142, 143)
+Technical notes |text|(41, 310)|(130, 319)|8|White, (RGB: 255, 255, 255)|Chicago, (RGB: 80, 83, 85)
+Releases |text|(41, 344)|(92, 353)|9|White, (RGB: 255, 255, 255)|Charade, (RGB: 43, 47, 49)
+Explainers |text|(41, 378)|(100, 388)|10|White, (RGB: 255, 255, 255)|Chicago, (RGB: 80, 83, 85)
+Q & As |text|(41, 412)|(80, 422)|10|White, (RGB: 255, 255, 255)|Gravel, (RGB: 68, 71, 74)
+Popular topics |text|(32, 514)|(125, 527)|13|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 18, 22, 25)
+Generative AI |text|(40, 553)|(117, 563)|10|Chinook, (RGB: 167, 240, 186)|Hippie Green, (RGB: 67, 134, 86)
+Open Source |text|(40, 586)|(112, 595)|9|Chinook, (RGB: 167, 240, 186)|Killarney, (RGB: 47, 112, 66)
+Charting a path to a more |text|(560, 609)|(1034, 647)|38|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 18, 22, 25)
+Semiconductors |text|(40, 618)|(131, 627)|9|Chinook, (RGB: 167, 240, 186)|Crusoe, (RGB: 8, 72, 27)
+Research |text|(334, 635)|(391, 646)|11|White, (RGB: 255, 255, 255)|Cape Cod, (RGB: 62, 65, 67)
+Science |text|(39, 650)|(84, 658)|8|Chinook, (RGB: 167, 240, 186)|Killarney, (RGB: 47, 112, 66)
+About cookies on this site Our websites require some cookies to function properly ( required ) . In addition , other cookies may be used with your consent to analyze site usage , improve the user experience and for advertising . |text|(32, 699)|(305, 803)|13|White, (RGB: 255, 255, 255)|Shark, (RGB: 34, 34, 34)
+Accept all |text|(981, 714)|(1046, 728)|14|Blue Ribbon, (RGB: 27, 106, 254)|Hawkes Blue, (RGB: 213, 227, 255)
+For more information , please review your cookie preferences options . By visiting our website , you agree to our processing of information as described in IBM's privacy statement . |text|(357, 715)|(627, 804)|13|White, (RGB: 255, 255, 255)|Gravel, (RGB: 75, 75, 75)
+To provide a smooth navigation , your cookie preferences will be shared across the IBM web domains listed here . |text|(681, 715)|(943, 766)|13|White, (RGB: 255, 255, 255)|Shark, (RGB: 34, 34, 34)
+Required only |text|(982, 778)|(1071, 791)|13|Blue Ribbon, (RGB: 27, 106, 254)|White, (RGB: 255, 255, 255)
+
+
+Output:
+Text|Element Type|Top Co-ordinates|Bottom Co-ordinates|Font Size|Background Color|Font Color|Deceptive Design Category|Deceptive Design Subtype|Reasoning
+IBM |text|(33, 13)|(89, 34)|21|White, (RGB: 255, 255, 255)|Chicago, (RGB: 80, 80, 80)|non-deceptive|not-applicable|Website name
+Blog Publications |text|(412, 16)|(569, 33)|15|White, (RGB: 255, 255, 255)|Chicago, (RGB: 82, 82, 82)|non-deceptive|not-applicable|Navigation information
+Focus areas |button|(263, 17)|(349, 32)|14|White, (RGB: 255, 255, 255)|Chicago, (RGB: 82, 82, 82)|non-deceptive|not-applicable|Navigation button
+Research |text|(161, 18)|(226, 30)|12|White, (RGB: 255, 255, 255)|Copper Canyon, (RGB: 127, 55, 29)|non-deceptive|not-applicable|Navigation item
+Careers |button|(605, 18)|(661, 30)|12|White, (RGB: 255, 255, 255)|Cornflower Blue, (RGB: 127, 186, 244)|non-deceptive|not-applicable|Navigation button
+About ✓ |button|(696, 18)|(764, 30)|12|White, (RGB: 255, 255, 255)|Twine, (RGB: 199, 142, 87)|non-deceptive|not-applicable|Navigation item
+Home ↳ Blog |text|(32, 82)|(77, 116)|13|White, (RGB: 255, 255, 255)|Chicago, (RGB: 88, 91, 93)|non-deceptive|not-applicable|Navigation information
+Categories |text|(31, 202)|(101, 214)|12|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 18, 22, 25)|non-deceptive|not-applicable|Section header
+News |text|(41, 241)|(72, 251)|10|White, (RGB: 255, 255, 255)|Charade, (RGB: 43, 47, 49)|non-deceptive|not-applicable|Category item
+Research |text|(41, 276)|(94, 285)|9|White, (RGB: 255, 255, 255)|Stack, (RGB: 140, 142, 143)|non-deceptive|not-applicable|Category item
+Technical notes |text|(41, 310)|(130, 319)|8|White, (RGB: 255, 255, 255)|Chicago, (RGB: 80, 83, 85)|non-deceptive|not-applicable|Category item
+Releases |text|(41, 344)|(92, 353)|9|White, (RGB: 255, 255, 255)|Charade, (RGB: 43, 47, 49)|non-deceptive|not-applicable|Category item
+Explainers |text|(41, 378)|(100, 388)|10|White, (RGB: 255, 255, 255)|Chicago, (RGB: 80, 83, 85)|non-deceptive|not-applicable|Category item
+Q & As |text|(41, 412)|(80, 422)|10|White, (RGB: 255, 255, 255)|Gravel, (RGB: 68, 71, 74)|non-deceptive|not-applicable|Category item
+Popular topics |text|(32, 514)|(125, 527)|13|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 18, 22, 25)|non-deceptive|not-applicable|Section header
+Generative AI |text|(40, 553)|(117, 563)|10|Chinook, (RGB: 167, 240, 186)|Hippie Green, (RGB: 67, 134, 86)|non-deceptive|not-applicable|Topic item
+Open Source |text|(40, 586)|(112, 595)|9|Chinook, (RGB: 167, 240, 186)|Killarney, (RGB: 47, 112, 66)|non-deceptive|not-applicable|Topic item
+Charting a path to a more |text|(560, 609)|(1034, 647)|38|White, (RGB: 255, 255, 255)|Vulcan, (RGB: 18, 22, 25)|non-deceptive|not-applicable|Blog title
+Semiconductors |text|(40, 618)|(131, 627)|9|Chinook, (RGB: 167, 240, 186)|Crusoe, (RGB: 8, 72, 27)|non-deceptive|not-applicable|Topic item
+Research |text|(334, 635)|(391, 646)|11|White, (RGB: 255, 255, 255)|Cape Cod, (RGB: 62, 65, 67)|non-deceptive|not-applicable|Possibly related content
+Science |text|(39, 650)|(84, 658)|8|Chinook, (RGB: 167, 240, 186)|Killarney, (RGB: 47, 112, 66)|non-deceptive|not-applicable|Topic item
+About cookies on this site Our websites require some cookies to function properly ( required ) . In addition , other cookies may be used with your consent to analyze site usage , improve the user experience and for advertising . |text|(32, 699)|(305, 803)|13|White, (RGB: 255, 255, 255)|Shark, (RGB: 34, 34, 34)|non-deceptive|not-applicable|Cookie notice
+Accept all |text|(981, 714)|(1046, 728)|14|Blue Ribbon, (RGB: 27, 106, 254)|Hawkes Blue, (RGB: 213, 227, 255)|forced-action|forced-action|"This cookie notice states that it requires some cookies to function, implying continued use equates to consent. There is no clear ""reject all"" option presented alongside the ""accept all"" in the notice.  While users can adjust preferences, the default action is acceptance by continuing to use the site."
+For more information , please review your cookie preferences options . By visiting our website , you agree to our processing of information as described in IBM's privacy statement . |text|(357, 715)|(627, 804)|13|White, (RGB: 255, 255, 255)|Gravel, (RGB: 75, 75, 75)|forced-action|forced-action|This text reinforces the forced action by explicitly stating that visiting the website implies agreement to data processing as described in the privacy statement.  This is deceptive as it doesn't provide a clear upfront choice about data collection before the user engages with the site.
+To provide a smooth navigation , your cookie preferences will be shared across the IBM web domains listed here . |text|(681, 715)|(943, 766)|13|White, (RGB: 255, 255, 255)|Shark, (RGB: 34, 34, 34)|forced-action|forced-action|This text provides additional information about cookie sharing but doesn't negate the forced action.
+Required only |text|(982, 778)|(1071, 791)|13|Blue Ribbon, (RGB: 27, 106, 254)|White, (RGB: 255, 255, 255)|forced-action|forced-action|Although this option allows users to accept only required cookies, it's presented after the statement about implied consent through continued use.  This makes the initial interaction a forced action.
+
+
+Remember: Cookie notices stating that accepting all cookies indicates agreement, **DOES NOT IMPLY** that continued use also **equates** to consent unless explicitly written.
+Remember: Generic and Standard advertising text should be marked as disguised-ads.
+REMEMBER FOR **COOKIE NOTICES**: HAVING A *'Manage Preferences'* RATHER THAN A *'Reject Cookies'* option IS A FORCED-ACTION!.
+**AGAIN: Standard advertisement text should be labelled as disguised-ads.**
+**Generic/Standard Ads: Generic and standard advertisement text should still be labeled as disguised-ads.**
+
+Consider these points when analyzing:
+
+*   **Spatial positioning:** Use coordinates to understand the relative placement of elements and how they might influence user interaction.
+*   **Visual Interference:** Identify elements with smaller font sizes or less prominent colors that might hide important information.
+*   **Forced Action:** Determine if users are forced into taking a specific action due to the design, such as accepting all cookies.
+*   **Hidden Information:** Look for elements that might mislead users or hide crucial details, like subscription terms or costs.
+*   **Hidden Subscription/Costs:** Look for elements where they push/ask users to sign up for promotional services or for emails and such. These can be classified as hidden-subscription or hidden-costs, **even if the text clearly specifies that the user is signing up**. Standard subscription services or costs are considered **deceptive**. Getting a discount for signing up for emails **is** considered a hidden subscription.
+*   **Relational Elements:** Consider how different elements relate to each other and whether they contribute to a deceptive pattern.
+
+ONLY GIVE THE NEW CSV FILE WITH VALUES **SEPERATED BY PIPE (|) and not COMMAs**. DO NOT GIVE ANY SURROUNDING ADDITIONAL TEXT.
+**DO NOT INTRODUCE ANY NEW ROWS IN THE FILE.**
