@@ -41,7 +41,9 @@ def load_model_tokenizer_sampling_params(checkpoint_dir, temperature=0.4, top_p=
         temperature=temperature,
         top_p=top_p,
         min_p=min_p,
+        top_k=15,
         max_tokens=max_tokens,
+        repetition_penalty=1.05,
         seed=seed
     )
     return model, tokenizer, sampling_params
