@@ -45,10 +45,10 @@ train:
 eval:
 
   # Number of optimizer steps between evaluation calls (type: int, default: 100)
-  interval: 25000000
+  interval: 250
 
   # Number of tokens to generate (type: Optional[int], default: 100)
-  max_new_tokens: 1024
+  max_new_tokens: 8192
 
   # Number of iterations (type: int, default: 100)
   max_iters: 100
