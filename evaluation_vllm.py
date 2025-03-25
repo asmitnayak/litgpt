@@ -8,7 +8,7 @@ from tqdm.auto import tqdm
 from transformers import AutoTokenizer
 from vllm import LLM, SamplingParams
 
-from litgpt.prompts import Qwen2_5_DP, Qwen2_5
+from litgpt.prompts import Qwen2_5_DP, Qwen2_5, Qwen2_5_DP_FS
 
 
 def load_test_dataset(batch_size=80, access_token=None):
@@ -18,11 +18,11 @@ def load_test_dataset(batch_size=80, access_token=None):
     test_data = []
     for entry in tqdm(data['data']):
         dl_data.append({
-            "instruction": Qwen2_5_DP().apply(entry['input']),
+            "instruction": Qwen2_5_DP_FS().apply(entry['input']),
             # too much RAM wastage
             # "output_df": pd.read_csv(StringIO(entry['output']), sep='|', header=None,names=['Deceptive Patterns Category', 'Deceptive Patterns Subtype', 'Reasoning'])
         })
-        test_data.append({            
+        test_data.append({
             "input": entry['input'],
             "output": entry['output'],
         })
@@ -31,11 +31,11 @@ def load_test_dataset(batch_size=80, access_token=None):
         batch_size=batch_size,
         shuffle=False,  # no shuffle might harm generate_responses_vllm_batch method
     )
-    
+
     return test_data, dl
 
 def load_model_tokenizer_sampling_params(checkpoint_dir, temperature=0.4, top_p=0.8, min_p=0.1, seed=1234, max_tokens=6200):
-    model = LLM(model=checkpoint_dir, tensor_parallel_size=2, max_model_len=max_tokens)
+    model = LLM(model=checkpoint_dir, tensor_parallel_size=4, max_model_len=max_tokens)
     tokenizer = AutoTokenizer.from_pretrained(checkpoint_dir, local_files_only=True)
     sampling_params = SamplingParams(
         temperature=temperature,
