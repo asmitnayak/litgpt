@@ -416,7 +416,7 @@ class Qwen2_5_DP(ChatML):
 class Qwen2_5_DP_FS(ChatML):
     def __init__(self):
         system_message = "You are Qwen, created by Alibaba Cloud. You are a helpful assistant. You should think step-by-step."
-        with open("litgpt/system_prompts/deceptive_pattern_prompt.txt", "r") as f:
+        with open("litgpt/system_prompts/deceptive_pattern_few_shot.txt", "r") as f:
             system_message = f.read()
         super().__init__(system_message)
 
